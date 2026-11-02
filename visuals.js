@@ -112,8 +112,8 @@ const Visuals = {
           const relation=controls.querySelector('select').value;
           const defs={disjoint:[40,80,100,100,200,80,100,100,'FF2FF1212','No common points. intersects=false.'],touch:[40,80,100,100,140,80,100,100,'FF2F11212','Shared edge only. touches=true, intersects=true, overlaps=false.'],overlap:[40,70,120,120,100,110,120,120,'212101212','Shared interior area. overlaps=true and intersects=true.'],within:[110,110,60,60,60,60,160,160,'2FF1FF212','A is inside B. A.within(B)=true; A.overlaps(B)=false.']};
           const [ax,ay,aw,ah,bx,by,bw,bh,matrix,message]=defs[relation];
-          stage.innerHTML=`<div class="lab-dual">${this.svg(`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="#85b3bc80" stroke="#538593" stroke-width="2"/><rect x="${ax}" y="${ay}" width="${aw}" height="${ah}" fill="#a6c38690" stroke="#557b48" stroke-width="2"/><text x="${ax+10}" y="${ay+25}">A</text><text x="${bx+bw-22}" y="${by+bh-12}">B</text>`,'Two squares with selected relationship','0 0 340 280')}<div><p class="matrix-key">Rows: A I / B / E<br>Columns: B I / B / E</p><div class="matrix">${[...matrix].map(v=>`<span>${v}</span>`).join('')}</div></div></div>`;
-          output.textContent=`${matrix} · ${message}`;
+          stage.innerHTML=`${this.svg(`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="#85b3bc80" stroke="#538593" stroke-width="2"/><rect x="${ax}" y="${ay}" width="${aw}" height="${ah}" fill="#a6c38690" stroke="#557b48" stroke-width="2"/><text x="${ax+10}" y="${ay+25}">A</text><text x="${bx+bw-22}" y="${by+bh-12}">B</text>`,'Two squares with selected relationship','0 0 340 280')}<details class="optional-code"><summary>Optional: the technical relationship matrix</summary><p class="matrix-key">Rows: A interior / boundary / exterior<br>Columns: B interior / boundary / exterior</p><div class="matrix">${[...matrix].map(v=>`<span>${v}</span>`).join('')}</div><p>DE-9IM code: <code>${matrix}</code>. The deeper explanation introduces this notation.</p></details>`;
+          output.textContent=message;
         }; break;
       case 'algorithms':
         controls.innerHTML=range('Polygon vertices',4,128,64,4);

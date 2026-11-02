@@ -2,30 +2,78 @@
 
 ## Scope and risks
 
-Quick, local verification of a dependency-free teaching website. Success means every topic is navigable, visuals and source images load, exercises give appropriate feedback, and saved learning work survives reload. The highest risks are misleading GIS calculations, silent loss of notes, awarding progress after revealing a solution, and broken topic/mobile navigation.
+Local verification of a static teaching website. Success means every source detail is included, every topic is navigable, visuals and source images load, programming checks execute correctly, and saved learning work survives reload. The highest risks are omitted source content, misleading GIS calculations, silent loss of notes/code drafts, misleading completion labels, and broken topic/mobile navigation.
 
-No existing application or test suite was present before implementation. The supplied Markdown is the source for numerical expectations; Bangladesh adaptations are labelled teaching examples, not official local geospatial data.
+No existing application or test suite was present before implementation. The supplied technical Markdown provides the original numerical expectations. The connected beginner story adds independently checkable school distances, a coordinate conversion and whole-cell population totals. Invented neighbourhood and Bangladesh examples are labelled teaching data.
 
 ## Verified
 
-- **12 calculation/content tests pass:** 18 unique topics; 144 graded checks; 54 field tasks; valid question definitions and numeric tolerances; WGS 84 degree lengths; UTM station checkpoints; polygon area and inclusion; cell centres; bilinear interpolation; classification/GVF; synthetic population and union/overlap checkpoints.
+- **17 calculation/content tests pass:** chapter/challenge coverage, all 72 generated program files, numerical teaching checkpoints, exact source reconstruction and hashes, source chapter/reader mappings, complete code/equation/table/diagram retention, and the full guide/Appendix A downloads.
+- **72 actual program runs verified:** all 36 Python/Go solutions pass their supplied checks; all 36 untouched starters fail at the TODO. Python 3.14.4 and Go 1.27.1 were used. Exercise contracts cover boundaries, empty inputs where supported, axis ambiguity, UTM exceptions, population conservation, overlap deduplication, numeric tolerances and JSON escaping.
 - Content checks require a Bangladesh analogy, limitations, a regional challenge and relevant schematic for every topic, without a photo-filler gallery. All instructional PNGs have valid signatures. Figure rendering requires source links, reading guides and concept questions; geometry requires the expected 13 figures and correct distinctions between open/closed LineStrings and coordinate/topological dimensions.
-- **146 real-browser checks pass** in isolated headless Microsoft Edge: all topics render with the expected exercises/visuals; inline instructional figures decode and have reading guides; geometry has its 12 subtopic links and 13 relevant diagrams; visual controls update; topic/section navigation; wrong/revealed/retried answers; numeric grading; notes/task/progress persistence; literal markup escaping; notebook export content; cancel-reset safety; keyboard grid interaction; filtered practice; download responses; coverage totals; collapsed/open mobile menu and Escape; responsive reflow; direct file opening; storage-denied fallback; no observed JavaScript exceptions.
+- **304 real-browser checks pass** in isolated headless Chromium: all 18 coding challenges and absence of radio quizzes; separate Python/Go drafts, language switching, code downloads, explicit self-reported completion, edit invalidation, migration, output notes and notebook export; all 72 program downloads; workshop filters; all 71 source sections and images/navigation; equations/MathML; connected readings; desktop/mobile reflow; direct file opening; storage-denied fallback; no observed JavaScript exceptions.
 - All topics were checked for horizontal overflow at 390 px; selected longer topics were also checked at 320 px. Desktop checks use a 1440 px viewport. Browser tests block web fonts, exercising the system-font fallback.
 - QGIS and Shapely documentation figure URLs and licence statements were checked. The user-provided topology diagram is included with an explicit unknown-general-reuse-licence warning, not an invented open licence. Credits are in `assets/figures/CREDITS.md` and beside each displayed figure. Superseded context photographs were removed.
 
-## Commands
+## Verification history
+
+### Programming exercises replace quizzes · 2 November 2026
+
+- Removed the 144-question quiz data and browser answer grading. Added one substantive programming challenge per chapter, each with Python and Go starters, runnable checks, a hint, acceptance criteria and a worked solution.
+- Ran every generated program: 36 passing solutions and 36 deliberately failing TODO starters. All 17 Node tests and 304 browser checks passed.
+- Verified independent language drafts, completion counted once per chapter, editing invalidation, cancel-restore protection, literal code/notes escaping, export of both languages and local output, and storage-denied session behaviour. Prior quiz records are archived and exported, while notes and field tasks retain their keys.
+- Visually inspected the programming exercise at desktop width and the expanded code editor/checks at 320 px. Long code scrolls within its container. The regenerated beginner guide links each chapter to its coding exercise and both starter downloads while still ending with the exact original technical note.
+- Browser-test implementation initially reused a top-level constant in the DevTools session; scoped the reused test variables appropriately and reran successfully.
+
+### Complete source coverage · 2 November 2026
+
+- Audited every heading and retained every source character in 71 generated sections. The report maps each section to its complete reading and relevant chapter(s).
+- Rendered all 34 tables, 33 code/text blocks, 9 displayed equations, 6 Mermaid definitions and 16 source images. Code and TeX definitions remain available verbatim. The complete beginner download ends with the unabridged source; `data/geolib.py` matches Appendix A exactly.
+- **17 Node tests and 276 browser checks passed.** Source changes, missing mappings, shortened listings and missing diagram files are covered by explicit completeness checks.
+- Inspected desktop equation/schema screenshots and 320 px equation scrolling. Tested long tables, matrix notation, full solutions and Appendix A at 320 px without widening the page. Mathematical fonts and generated diagrams are local assets; full readings also work through `file://`.
+- Final rebuild and all 17 Node tests passed. Inspected the remaining five source diagrams; all six have no labels outside their SVG bounds. Validated all 35 SVGs as XML and 432 local Markdown links across seven documents, including appended-guide anchors and vendor licences. Confirmed the current reference scripts, coverage report, six diagrams, rendering assets and `geolib.py` are served byte-for-byte at `http://192.168.0.100:8000/`.
+- Full source passages retain their original wording. Separate reading clarifications cover representation versus repeatability precision, projection approximations, the equal-interval empty-class count, raster versus vector styling, class-boundary conventions, and unsupported teaching-helper inputs.
+
+### Connected neighbourhood story · 2 November 2026
+
+- Reordered all 18 chapters into one project: draw → locate → measure → add population → count once → explain and share. The homepage, sidebar, Next/Previous links, notebook and generated guide follow that order. Existing topic IDs and persisted exercise keys are retained.
+- **13 content/calculation tests and 189 browser checks passed.** The notebook check now finds the saved topic explicitly; its old “first card” assumption no longer matched the new chapter order.
+- Checked the story’s 100 m home-to-school distance and School A’s EPSG:32646 coordinates. The 24-cell raster has 240 people; each school selects 12 cells, with 4 shared; counting 20 distinct cells gives 200 people.
+- Generated and inspected all 16 neighbourhood SVGs at full size. Corrected a cell-centre marker covering its value, protected grid labels where circle outlines cross them, and aligned the conversion arrow. Browser-measured text bounds fit every SVG. The distance triangle uses equal axis scales.
+- Inspected desktop and 390 px mobile screenshots. All chapters pass horizontal-overflow checks at 390 px; longer selected chapters also pass at 320 px.
+- Validated 123 local Markdown links and parsed all 28 original SVGs, including accessible titles/descriptions and finite coordinates. Regenerated `beginner-geospatial-guide.md` from the same content used on the website.
+- Confirmed the existing LAN server responds with HTTP 200 at `http://192.168.0.100:8000/`, including the new story script, diagram and School A CSV. Chapter 1 is `/#lesson/geometry`.
+
+### Beginner-first reading verification · 2 November 2026
+
+- All 18 lessons now provide a visible plain-language first reading, an everyday example, defined terms, three worked steps, an explained figure, a three-step lab walkthrough and an unscored warm-up. The homepage introduces GIS, features, layers, attributes and coordinates.
+- **12 calculation/content tests and 167 browser checks passed.** Browser checks cover default collapsed technical sections, deep links revealing optional content, keyboard-operated warm-up disclosure, existing grading and persistence, all lesson images, downloadable beginner notes and mobile layouts.
+- Inspected desktop and mobile screenshots of the new first-reading layout. Confirmed the existing LAN server serves the updated page, new script and beginner guide with HTTP 200.
+- `beginner-geospatial-guide.md` is generated from `beginner.js` with `node scripts/build-beginner-guide.cjs`, keeping the website and standalone explanations aligned. Technical questions retain their original grading keys and persisted progress IDs.
+
+### Visual enrichment verification · 2 November 2026
+
+- Rebuilt all 12 original study SVGs with `node scripts/build-study-figures.cjs` and visually inspected a full-size browser-rendered contact sheet for labels, geometry and clipping.
+- All **12 calculation/content tests** and **146 browser checks** passed after integration. This run used installed Chromium on Linux via `EDGE_PATH`; the isolated local test browser needed `--no-sandbox` because this environment disables unprivileged browser sandboxing.
+- SVG checks cover accessible titles/descriptions, finite coordinates and local source links. Existing browser checks decoded every lesson image and verified responsive layouts at 390 px and selected 320 px pages.
+- The Markdown note now embeds 12 original SVGs and four existing source figures with reading guides and attribution; diagram scale assumptions and synthetic values are explicit.
+
+### Test commands
 
 ```bash
-node --test tests/course.test.cjs
+npm run build
+node --test tests/*.test.cjs
+npm run test:programming
 node tests/browser-smoke.cjs
 ```
 
 The browser test uses Edge’s DevTools protocol, not Playwright. Set `EDGE_PATH` to another compatible installed browser executable if necessary. It runs its own local server and isolated temporary browser profile, then closes them. Screenshots and a results manifest are saved in the approved OpenCode temporary directory; the path is printed on completion.
 
+The connected-story run on this Linux environment used `TEMP=/tmp/opencode EDGE_PATH=/tmp/opencode/gis-chromium node tests/browser-smoke.cjs`. The local wrapper enables Chromium’s `--no-sandbox` mode for this environment’s sandbox restriction.
+
 ## Not verified
 
-- External QGIS, Python-package, GDAL or PostGIS exercises were not executed. They are learner tasks, not browser functionality.
+- The full technical note’s external QGIS, third-party Python-package, GDAL and PostGIS projects were not executed. The 36 standard-library Python/Go chapter solutions were executed separately as described above.
 - No Safari/Firefox, real touchscreen, screen-reader, full WCAG conformance or exhaustive colour-contrast audit was performed.
 - External source links may change after verification; cached teaching images remain available offline. Source metadata and licences are recorded as checked on 2 November 2026.
 - Self-assessed field-task completion does not verify a learner’s code, survey accuracy or professional competency.

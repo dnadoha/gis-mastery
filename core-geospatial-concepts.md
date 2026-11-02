@@ -1,5 +1,7 @@
 # Core Geospatial Concepts for GIS Developers
 
+> **Completely new to GIS? Start with [GIS from zero: one connected neighbourhood story](beginner-geospatial-guide.md).** Follow the same schools through 18 ordered chapters: draw the places, locate them, measure distances, add population, count people once, then explain and share the result. Each chapter recalls what came before, explains new words when needed, and shows why the next step matters. This longer document is the technical reference, with formulas, programming exercises and separate example datasets.
+
 **Phase 1 study note** · Coordinate reference systems · Geometry model · Raster vs. vector · Accuracy and precision · Basic cartography · QGIS hands-on
 
 | | |
@@ -8,9 +10,9 @@
 | **Level** | Beginner → intermediate |
 | **Suggested time** | 2–4 weeks (see the study plan below) |
 | **Languages / tools** | Python 3 (examples), SQL/PostGIS (examples), QGIS 3.x (hands-on), GDAL/OGR command line (reference) |
-| **How numbers were checked** | Every numeric result in this note was produced by the dependency-free reference code in [Appendix A](#appendix-a--reference-implementation-geolibpy). That code was validated against independent checks (a numerical meridian-arc integral for the UTM implementation, and a published geodesic test line for the distance code). PROJ/pyproj results should agree to within millimetres to a few centimetres. Compare with a tolerance, not with `==`. Outputs attributed to third-party tools (pyproj, Shapely, PostGIS, QGIS, GDAL) are *expected results* derived from the same formulas and the standards; they were not executed while this note was written, so run them and compare. |
+| **How numbers were checked** | The core numeric benchmarks in this note were produced by the dependency-free reference code in [Appendix A](#appendix-a--reference-implementation-geolibpy). That code was validated against independent checks (a numerical meridian-arc integral for the UTM implementation, and a published geodesic test line for the distance code). PROJ/pyproj results should agree to within millimetres to a few centimetres. Compare with a tolerance, not with `==`. Outputs attributed to third-party tools (pyproj, Shapely, PostGIS, QGIS, GDAL) are *expected results* derived from the same formulas and the standards; they were not executed while this note was written, so run them and compare. The added SVG diagrams use the course's JavaScript reference calculations or explicitly labelled synthetic geometry; their generator is linked in the figure credits. |
 
-> **Schematic vs. scale-accurate.** ASCII drawings and Mermaid diagrams in this note are *schematics*. They show relationships, not true shapes or distances. Numeric tables are computed values.
+> **Read the visuals.** The inline SVG diagrams use explicit geometry and reference calculations; each states its scale assumptions. Height, accuracy and coverage examples use labelled synthetic values. ASCII drawings and Mermaid diagrams are *schematics*, showing relationships rather than true shapes or distances. Open any image for a larger view. [Figure provenance and rebuild instructions](assets/figures/CREDITS.md).
 
 ---
 
@@ -58,6 +60,10 @@ At the end you will have:
 ## 2. Conceptual foundations
 
 ### 2.1 Modelling the Earth: geoid, ellipsoid, datum
+
+![Terrain, geoid and ellipsoid with a point 50 m above the ellipsoid, 30 m above the geoid and positive geoid undulation of 20 m.](assets/figures/study-heights.svg)
+
+**Read it:** Follow each arrow from its reference surface to the same point. In this simplified local example, *h ≈ H + N*: the different height reports do not imply that the terrain moved. Surface separation is exaggerated.
 
 Positions on the Earth are only meaningful relative to a **model of the Earth's shape**.
 
@@ -108,6 +114,10 @@ No projection is simultaneously conformal and equal-area (except for trivial cas
 
 ### 2.3 Axis order: latitude/longitude vs. longitude/latitude
 
+![Actual Amsterdam coordinates and their swapped values plotted on a labelled longitude–latitude grid.](assets/figures/study-axis-order.svg)
+
+**Read it:** The green dot uses longitude 4.9003°, latitude 52.3791°. The orange dot reverses those values. Both pass global numeric-range checks; only one lies in the expected area. The axes measure angles, not ground distances.
+
 Mathematicians write points as (*x*, *y*), meaning (east, north). Geodesists write geographic positions as (latitude, longitude), meaning (north, east). Both conventions are alive in today's software, and this is the origin of an enormous number of bugs.
 
 ```
@@ -137,6 +147,10 @@ Some **projected** CRSs also have a northing-first definition. For example, EPSG
 > **Rule of thumb.** Inside your application, normalise to **(x, y) = (easting or longitude, northing or latitude)** at the system boundary, and use `always_xy=True` (or the equivalent) everywhere.
 
 ### 2.4 The geometry model: OGC Simple Features
+
+![QGIS polygon diagram showing a closed vertex sequence and feature attributes.](assets/figures/qgis-polygon_feature.png)
+
+**Read it:** Separate the boundary coordinates from the descriptive attributes. A Polygon includes the enclosed area, excluding holes; a LinearRing is just a curve. *Source: QGIS, A Gentle Introduction to GIS, GNU FDL 1.2 or later; [full attribution](assets/figures/CREDITS.md#qgis-a-gentle-introduction-to-gis).*
 
 The **OGC Simple Feature Access** standard (also ISO 19125) defines the geometry types that nearly every GIS database, file format and library implements (PostGIS, GEOS/Shapely, GDAL/OGR, GeoPackage, GeoJSON with small differences).
 
@@ -189,6 +203,10 @@ Examples (schematic):
 
 ### 2.5 Raster vs. vector
 
+![One circle represented as a vector outline and as 6 by 6 and 12 by 12 cell-centre rasterisations at a fixed extent.](assets/figures/study-vector-raster.svg)
+
+**Read it:** The dashed circle remains fixed. A cell is filled when its centre lies inside that circle. Smaller cells approximate the boundary more closely; enlarging an existing coarse raster cannot recover unsampled detail.
+
 | | **Vector** | **Raster** |
 |---|---|---|
 | Structure | Geometries with attributes | Regular grid of cells (pixels), each with a value per band |
@@ -209,6 +227,10 @@ Key raster vocabulary:
 Rule of thumb for the choice: *if you would naturally say "this feature has an outline and attributes", use vector; if you would say "what is the value at this place?" for every place, use raster.* Converting between them (rasterise, vectorise) always loses or invents information.
 
 ### 2.6 Scale, accuracy, precision and resolution
+
+![Four common-scale targets independently compare small or large systematic bias with tight or widely scattered repeat observations.](assets/figures/study-accuracy.svg)
+
+**Read it:** Compare across for a change in bias and down for a change in spread. A tight cluster can miss the truth. A widely spread sample centred on truth has low bias, but its individual observations still have substantial error.
 
 These words are often used interchangeably. They are not the same.
 
@@ -285,6 +307,10 @@ flowchart TD
 **How to read it.** The top row is *modelling*: you cannot assign numbers to positions without choosing an ellipsoid and a datum. The middle row is *representation*: the same datum can be expressed as angles (geographic) or as metres on a plane (projected), and the data itself is either vector or raster. The bottom row is *use*: measurement needs a CRS whose distortion is acceptable for the task, and cartography needs classified, styled values. Most bugs come from skipping a box (for example doing area analysis directly on geographic degrees).
 
 ### 3.2 Geometry type hierarchy (OGC Simple Features)
+
+![Shapely compares valid MultiPolygon members touching at a point with invalid members sharing a boundary segment.](assets/figures/shapely-multipolygon.png)
+
+**Read it:** One logical feature can have multiple polygon parts. Member interiors must not overlap, and their boundaries may meet only at isolated points. *Source: Sean Gillies and Shapely contributors, CC BY 3.0 US; [full attribution](assets/figures/CREDITS.md#the-shapely-user-manual).*
 
 ```mermaid
 classDiagram
@@ -391,6 +417,10 @@ erDiagram
 
 ### 4.1 Geographic coordinates: lengths of degrees and distances on the ellipsoid
 
+![WGS 84 common-scale bars show nearly constant latitude-degree lengths and shrinking longitude-degree lengths at 0, 30 and 60 degrees latitude.](assets/figures/study-degree-lengths.svg)
+
+**Read it:** Blue longitude bars get shorter toward the poles. Green latitude bars remain close to 111 km but are not exactly constant. These are local curvature-based lengths per degree, not finite endpoint-to-endpoint geodesics.
+
 With ellipsoid parameters *a* (semi-major axis) and *e*² = *f*(2 − *f*) = 0.00669437999 (WGS 84), the radii of curvature at latitude φ are
 
 $$
@@ -452,6 +482,10 @@ print(round(haversine(*ams, *utr), 1))          # haversine   -> 35244.9  (-0.11
 
 ### 4.2 Map projections in practice
 
+![Equal local ground squares drawn in spherical Mercator at 0, 30 and 60 degrees latitude; the 60-degree square has twice the side and four times the area.](assets/figures/study-mercator.svg)
+
+**Read it:** All panels share one drawing scale. At 60°, the length factor is 2, so the area factor is 2² = 4. This local spherical approximation illustrates distortion; it is not a universal correction for large polygons.
+
 **Web Mercator (EPSG:3857).** Used by virtually all slippy-map tiles. It applies the *spherical* Mercator formulas with radius *R* = *a* = 6 378 137 m to WGS 84 geographic coordinates (λ, φ in radians):
 
 $$
@@ -491,6 +525,10 @@ $$
 | Global analysis of distances | Geodesic computations (`geography`, `Geod`) | Any single planar CRS |
 
 ### 4.3 Datum transformations and PROJ pipelines
+
+![Assignment retains Amsterdam longitude and latitude; projection to EPSG:32631 converts them to easting 629345.7 m and northing 5804903.4 m.](assets/figures/study-transform.svg)
+
+**Read it:** The horizontal arrow adds verified CRS metadata. The downward arrow changes the coordinates and their units while preserving the physical location. This example changes projection within WGS 84; changing datums can require additional operations.
 
 Changing **datum** (not just projection) needs a **coordinate operation**:
 
@@ -596,6 +634,10 @@ Observe the **boundary cases**: `(0, 2)` on the left edge is reported inside and
 
 #### 4.4.4 Spatial relationships: the DE-9IM
 
+![Four polygon pairs illustrate disjoint, edge-touching, area-overlapping and strictly-within relationships.](assets/figures/study-predicates.svg)
+
+**Read it:** A shared edge is enough for `intersects`, but not `overlaps`. Full containment also intersects without satisfying `overlaps`. The outlines and labels distinguish A from B independently of colour.
+
 The **Dimensionally Extended 9-Intersection Model** describes how two geometries *A* and *B* relate by the dimension of the intersection of their **interior (I)**, **boundary (B)** and **exterior (E)** sets:
 
 ```
@@ -635,6 +677,10 @@ The `relate(A, B)` function returns the matrix string; `relate_pattern(A, B, pat
 > **`touches` vs. `intersects`.** Two parcels that share only a border *intersect* (they have common points) but their *interiors* do not, so `overlaps` is false and `touches` is true. Spatial joins that should find "parcels inside district X" usually need `within` or `covers`, not `intersects`, otherwise neighbours that merely touch are included.
 
 #### 4.4.5 Validity checks in code
+
+![Shapely compares a valid polygon with a hole against an invalid arrangement that disconnects the polygon interior.](assets/figures/shapely-polygon.png)
+
+**Read it:** Follow the remaining polygon interior around the hole. Ring closure alone cannot prove validity: contacts must not split the interior into disconnected pieces. *Source: Sean Gillies and Shapely contributors, CC BY 3.0 US; [full attribution](assets/figures/CREDITS.md#the-shapely-user-manual).*
 
 ```python
 # Reference helpers: orientation test, segment intersection, shoelace (Appendix A + below)
@@ -687,6 +733,10 @@ In PostGIS: `SELECT ST_IsValid(g), ST_IsValidReason(g), ST_MakeValid(g)`. **Caut
 
 #### 4.4.6 Simplification, buffering and units
 
+![Shapely compares an original detailed outline with its simplified polygon.](assets/figures/shapely-simplify.png)
+
+**Read it:** Compare retained vertices and boundary departures. The simplification tolerance is measured in the geometry's CRS units, so a tolerance of `1` does not always mean one metre. *Source: Sean Gillies and Shapely contributors, CC BY 3.0 US; [full attribution](assets/figures/CREDITS.md#the-shapely-user-manual).*
+
 - **Douglas–Peucker** simplification removes vertices that deviate less than a *tolerance* from the simplified line. The tolerance is in **CRS units**: `simplify(0.001)` on EPSG:4326 means 0.001° (about 111 m of latitude), on EPSG:32631 it means 1 mm. Choose the unit deliberately.
 - **Buffer** distance is also in CRS units. `buffer(100)` on a geographic geometry means 100 **degrees**, which wraps around the planet. Reproject to a projected CRS first (or use PostGIS `geography`, which takes metres).
 - A buffered point is a polygon with a finite vertex count. With the default of 16 segments per quarter circle (64 vertices), a polygon inscribed in a circle of radius *r* has area ½·64·*r*²·sin(2π/64) = 0.99839·π*r*², i.e. about 0.16 % smaller than the true circle.
@@ -694,6 +744,10 @@ In PostGIS: `SELECT ST_IsValid(g), ST_IsValidReason(g), ST_MakeValid(g)`. **Caut
 ### 4.5 Raster internals: geotransform, resampling, storage
 
 #### 4.5.1 The geotransform
+
+![A north-up 2000 m raster cell has upper-left corner 570000, 5820000 m and centre 571000, 5819000 m.](assets/figures/study-cell-centres.svg)
+
+**Read it:** Move half a cell right and half a cell down from the orange corner to reach the blue centre. Easting increases; northing decreases. Array indices are `[row, col]`, while map positions are `(x, y)`.
 
 GDAL describes the placement of a raster with six numbers `(GT0 … GT5)`:
 
@@ -733,6 +787,10 @@ Array indexing convention: `array[row, col]`, i.e. `array[y, x]`. Mixing this up
 **Pixel-is-area vs. pixel-is-point.** GeoTIFF by default treats a cell value as representing the whole *area* of the cell (`RasterPixelIsArea`); some products (for example elevation grids sampled at grid nodes) use pixel-is-point semantics. The two interpretations differ by half a cell in position. Check the metadata when overlaying rasters from different producers.
 
 #### 4.5.2 Resampling
+
+![Bilinear interpolation at u=0.25 and v=0.5 combines samples 10, 20, 30, 40 with weights 0.375, 0.125, 0.375, 0.125 to produce 22.5.](assets/figures/study-bilinear.svg)
+
+**Read it:** The four blue sample positions are **cell centres**, not cell corners. The target is nearer the left pair, so those values receive larger weights. The weights sum to one. Blending category identifiers this way would invent a meaningless code.
 
 Whenever the grid changes (reprojecting, changing the cell size, building overviews) new values must be computed:
 
@@ -814,6 +872,10 @@ This is why GPU-based renderers (WebGL) subtract an origin ("relative to centre"
 ### 4.7 Classification and labelling algorithms
 
 #### 4.7.1 Classification methods
+
+![The same twelve synthetic density values coloured using equal interval, quantile and Fisher-Jenks, with computed breaks under each row.](assets/figures/study-classification.svg)
+
+**Read it:** Each value stays in the same position in all three rows. Colours change only because class boundaries change. Compare the first seven districts before inferring a spatial pattern from a colour ramp.
 
 For *n* values, *k* classes and edges *e*₀ < *e*₁ < … < *e*ₖ:
 
@@ -1349,6 +1411,10 @@ d. Show that the bow-tie `[(0,0),(2,2),(2,0),(0,2)]` is invalid, that its shoela
 ---
 
 ### Exercise 4: Applied challenge, a service-coverage audit (Applied)
+
+![Two nine-cell selection masks share two cells; at ten people per selected cell their union contains 160 people, not 180.](assets/figures/study-coverage-union.svg)
+
+**Read it:** Count cells labelled A or B, including AB in each separate total. Then subtract one copy of the two AB cells. This small synthetic example explains union counting; the station exercise below has its own computed population grid and totals.
 
 **Scenario.** A transport agency wants to know how many people live within 15 km (straight-line) of each of the four stations, how many people are covered by *at least one* station, how many are double-counted because service areas overlap, and how to present the result on a map.
 

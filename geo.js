@@ -123,11 +123,5 @@ const Geo = {
       return count;
     });
     return { rings, totals, people, cells, excess, counts, memberships };
-  },
-  grade(exercise, raw) {
-    if (exercise.type === 'choice') return raw !== null && raw !== '' && Number(raw) === exercise.answer;
-    if (raw === null || String(raw).trim() === '') return false;
-    const value = Number(String(raw).trim());
-    return Number.isFinite(value) && Math.abs(value-exercise.answer) <= exercise.tolerance + Number.EPSILON * Math.max(1, Math.abs(exercise.answer));
   }
 };

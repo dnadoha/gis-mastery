@@ -1,6 +1,6 @@
 # Fieldnotes — the geospatial field guide
 
-A dependency-free HTML/CSS/JavaScript learning website based on `core-geospatial-concepts.md` (left unchanged).
+A static HTML/CSS/JavaScript learning website with a connected beginner story and the complete technical reading from `core-geospatial-concepts.md`. All generated pages, equations, diagrams and font assets are included for offline use.
 
 ## Open it
 
@@ -9,44 +9,85 @@ Open **index.html** in a modern browser. No build step or npm installation is re
 For consistent local storage across sessions, serve the folder on a fixed origin:
 
 ```bash
-python -m http.server 8000
+python3 -m http.server 8000 --bind 0.0.0.0
 ```
 
-Visit **http://localhost:8000**. The browser exercises need no Python packages or backend. Web fonts are optional and fall back to system fonts offline.
+Visit **http://localhost:8000** or use this computer’s local-network IP address from another device on the same network. Start at **http://localhost:8000/#lesson/geometry**. Interactive diagrams need no backend. Programming exercises run locally with Python or Go and need only the standard library. Web fonts are optional and fall back to system fonts offline.
 
 ## Explore
 
+- **New to GIS?** Start at [chapter 1](index.html#lesson/geometry) or download [the connected beginner guide](beginner-geospatial-guide.md). Follow one invented neighbourhood near Dhaka to answer “How many people live near at least one school?” The same schools, homes and population grid connect all 18 chapters.
+- Read in sequence: draw the places → locate them → measure carefully → add population → count people once → explain and share. Every chapter recalls the previous step, explains new terms as they appear, develops three short reading sections, includes an explained diagram and a pause question, and introduces the next step.
+- **Complete source coverage:** [71 of 71 sections](index.html#reference), including 34 tables, 33 code/text listings, 9 rendered equations, 6 rendered Mermaid diagrams, 16 source illustrations, all four exercises and solutions, and Appendix A. Every chapter offers its mapped **Full detail from the original note**. [SOURCE-COVERAGE.md](SOURCE-COVERAGE.md) records exact locations and source line ranges.
+- The complete-note reader has source-order Previous/Next links, full-text search and a glossary. Short clarifications identify terminology differences and source-code assumptions. The downloadable guide includes the entire technical note after the connected first reading.
 - 18 topic pages, reached through unique URLs such as `index.html#lesson/axes`.
 - Persistent topic sidebar, lesson cards, Previous/Next navigation and per-lesson section links.
-- Step-by-step explanations, an interactive lab, a relevant local schematic, and instructional figures placed beside the concept they explain. Figures are not added to meet an image quota.
-- Bangladeshi analogies throughout: Dhaka addresses, Tangail paddy plots, shared aal boundaries, Khulna height references, Sylhet floods, Kamalapur access and cyclone-shelter coverage.
+- The main reading uses one column, with the Next link immediately after the chapter. Interactive experiments, programming exercises and technical explanations open separately below it; section links reveal their content automatically.
+- 16 original neighbourhood diagrams share explicit geometry and population data. Both the website and downloadable guide use the same chapters and generated images. The 24-cell teaching grid contains 240 people; the two school areas select 200 people when shared cells are counted once.
+- Optional Bangladeshi analogies include Dhaka addresses, Tangail paddy plots, shared aal boundaries, Khulna height references, Sylhet floods, Kamalapur access and cyclone-shelter coverage. These reference examples are separate from the connected story.
 - 29 instructional source figures from QGIS, the Shapely manual and the user-provided GIS for Land Administration topology reference. Each displayed figure has a reading guide, concept question, full-size view, source and rights information. No scenic/historical photo gallery. See `assets/figures/CREDITS.md`.
-- Geometry is a 12-part walkthrough: individual types, rings, multipart shapes, collections, dimensions, boundary/interior/exterior, validity, repair and dataset topology, illustrated with 13 directly relevant figures.
-- 144 auto-checked questions with hints, solutions, retries, numeric tolerances and shuffled choices.
-- 54 self-assessed field tasks, including 18 Bangladesh challenges and the source’s progressive Python/QGIS projects (198 checks/tasks in total).
-- Practice bank filtered by topic, skill and progress; draw 10 questions or show all matches.
-- Local progress and editable notes; export to Markdown, print, or explicitly reset.
-- Source references, tool links and downloadable station CSVs on the reference shelf.
+- 12 original, scalable diagrams explain height references, axis swaps, distortion, reprojection, degree lengths, raster sampling, cell centres, interpolation, accuracy, classification, spatial predicates and coverage counting. Diagrams label their scale assumptions and synthetic examples; numerical graphics use the course reference calculations. The Markdown note includes these plus four relevant source figures.
+- The optional geometry reference is a 12-part walkthrough: individual types, rings, multipart shapes, collections, dimensions, boundary/interior/exterior, validity, repair and dataset topology, illustrated with 13 directly relevant figures.
+- **18 hands-on programming exercises**, each in **Python and Go**, replace the multiple-choice/numeric quiz bank. Each has a precise contract, acceptance criteria, starter code, runnable checks, a hint and a worked solution. [Open the workshop](index.html#practice) or [browse the downloadable files](exercises/README.md).
+- Challenges progress from bounding boxes and coordinate guards to raster aggregation, polygon area, GeoJSON serialization and the 200-person school-coverage calculation.
+- Separate editable Python/Go drafts, local test-output notes, code downloads and self-reported completion. The site does not execute Python or Go; run the downloaded file locally with `python3 file.py` or `go run file.go`.
+- 54 self-assessed field tasks, including 18 Bangladesh challenges and the source’s progressive Python/QGIS projects.
+- Workshop filters by topic, skill and completion; choose three mixed challenges or show all matches in chapter order.
+- Local progress and editable notes; export to Markdown (including code drafts in both languages), print, or explicitly reset.
+- Source references, tool links and downloadable CSVs on the reference shelf. Chapter 17 opens `data/neighbourhood-school.csv`, the same invented School A followed throughout the story; its documented CRS is EPSG:4326, with `lon` and `lat` fields.
 
-Revealing a solution does **not** award a pass. Retry starts a fresh unassisted attempt. A passed check records that it was answered correctly at least once; later mistakes do not erase that history. Field-task checkboxes are self-assessment, not code execution or grading. Notes/progress are local to the browser and origin; clearing browser storage removes them. Export before switching browsers/origins.
+Opening a solution does not mark an exercise complete. Completion is self-reported after running the supplied checks and an extra case locally. Completing either language counts once per chapter; editing a browser draft clears that language’s completion. Existing notes and field tasks are preserved. Old quiz records stay archived in storage and notebook exports, and do not count toward the new programming progress. Notes, drafts and progress are local to the browser and origin; export before switching browsers/origins or clearing storage.
 
 ## Files
 
 - `index.html`: accessible application shell.
 - `styles.css`: responsive styling and print layout.
-- `course.js`: lesson explanations, source mappings, questions and task rubrics.
-- `geo.js`: reference calculations and numeric grading.
+- `course.js`: lesson explanations, source mappings and task rubrics.
+- `programming.js`: challenge contracts, Python/Go implementations, runnable checks and standalone file generation.
+- `coding.js`: language selection, draft editing, downloads and local-completion workflow.
+- `exercises/`: 36 starter programs, 36 runnable solutions and the setup/catalogue README.
+- `geo.js`: reference calculations for interactive diagrams.
 - `bangladesh.js`: local analogies, relevant problem schematics and regional challenges.
 - `teaching.js`: inline instructional figures, reading guides, micro-checks and the expanded geometry walkthrough.
+- `beginner.js`: connected first readings, chapter order, recaps and transitions for all 18 topics. Existing topic IDs remain stable; programming drafts use independent versioned keys.
+- `neighbourhood.js`: shared invented neighbourhood, population-cell selection and original story diagrams.
+- `beginner-geospatial-guide.md`: connected reading with per-chapter detail links, followed by the full original technical note.
+- `reference-data.js`: generated, complete source sections and rendered HTML, with source hashes and counts.
+- `reference.js`: full-detail chapter disclosures, complete-note reader, search, glossary links and reading clarifications.
+- `SOURCE-COVERAGE.md`: generated section-by-section coverage index.
 - `visuals.js`: offline illustrations and interactive labs.
 - `app.js`: navigation, practice, local persistence and notebook export.
-- `data/`: CSV inputs for the external exercises.
+- `data/`: the story’s School A CSV, station CSVs and complete `geolib.py` extracted from Appendix A.
 - `tests/`: dependency-free Node tests.
+- `scripts/build-study-figures.cjs`: rebuild the 12 original SVG illustrations with `node scripts/build-study-figures.cjs`.
+- `scripts/build-beginner-guide.cjs`: rebuild the connected Markdown guide and 16 neighbourhood SVGs with `node scripts/build-beginner-guide.cjs` after changing the story or diagram source.
+- `scripts/build-programming.cjs`: rebuild all downloadable programs and the exercise catalogue from the same definitions used in the browser.
+- `scripts/build-reference.cjs` and `scripts/reference-map.cjs`: compile the full source into explicit chapter mappings, rendered equations/diagrams, downloadable code and the coverage report. A new unmapped heading fails the build.
+- `assets/vendor/`: local KaTeX styles/fonts and rendering-tool licences. Build dependencies are pinned in `package-lock.json`; no Markdown, math or diagram engine runs in the browser.
+
+## Rebuild after editing content
+
+Node 22.13+ and Chromium are needed to rebuild the complete technical reading:
+
+```bash
+npm ci
+npm run build
+```
+
+To use an already installed Chromium, set `PUPPETEER_SKIP_DOWNLOAD=true` during installation and `PUPPETEER_EXECUTABLE_PATH` during the build. In this environment the build uses `PUPPETEER_EXECUTABLE_PATH=/tmp/opencode/gis-chromium npm run build`. The prebuilt website itself still opens without installing dependencies.
+
+The source slices must reconstruct the original document exactly. Tests verify every section's mapping, code and equation retention, image availability, and the complete guide/Appendix A download. Rebuild the full reference after changing `core-geospatial-concepts.md`; the guide generator rejects stale reference data.
 
 Run the calculation/content tests with:
 
 ```bash
-node --test tests/course.test.cjs
+node --test tests/*.test.cjs
+```
+
+Verify all actual Python/Go solutions and confirm unimplemented starters fail at their TODO (requires both runtimes):
+
+```bash
+npm run test:programming
 ```
 
 Real-browser smoke checks (Windows Edge, or set `EDGE_PATH`):
@@ -61,4 +102,4 @@ Bangladesh material is an explicitly labelled teaching adaptation. Approximate D
 
 The GIS for Land Administration image was supplied by the user; no explicit general reuse licence was found in its repository. Its caption and credit manifest flag that uncertainty. Obtain permission or replace that figure before publicly redistributing if required. The QGIS and Shapely figures retain their documented licences; attribution is displayed alongside them.
 
-The website’s population lab computes the source’s synthetic 45 × 40 raster and 64-vertex buffers, rather than substituting fixed totals when the radius changes. Its default 15 km checkpoints match the supplied note. Its colours use fixed reference breaks; this interactive preview is not the external exercise’s final map deliverable. Projection distortion diagrams use a labelled spherical approximation; all schematic visuals are identified as such. Python/SQL snippets and QGIS tasks run in external tools, not in the browser.
+The optional population lab computes the technical reference’s synthetic 45 × 40 raster and 64-vertex buffers. Its default 15 km checkpoints match that note. This is a separate dataset from the beginner story’s 6 × 4 grid and 200 m school rule. Its colours use fixed reference breaks. Projection distortion diagrams use a labelled spherical approximation; schematic visuals state their assumptions. Python/SQL snippets and QGIS tasks run in external tools, not in the browser.

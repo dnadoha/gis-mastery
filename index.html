@@ -3,14 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Learn GIS through Bangladeshi analogies, credited reference images, visual labs and 198 exercises based on Core Geospatial Concepts.">
+  <meta name="description" content="Learn GIS step by step through one connected neighbourhood project. Follow the same schools from drawing a map to locating, measuring and counting people. New terms are explained as you go.">
   <title>Fieldnotes — Learn GIS by doing</title>
   <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="assets/vendor/katex/katex.min.css">
   <script defer src="course.js"></script>
   <script defer src="geo.js"></script>
   <script defer src="bangladesh.js"></script>
   <script defer src="teaching.js"></script>
+  <script defer src="neighbourhood.js"></script>
+  <script defer src="beginner.js"></script>
+  <script defer src="programming.js"></script>
+  <script defer src="coding.js"></script>
+  <script defer src="reference-data.js"></script>
+  <script defer src="reference.js"></script>
   <script defer src="visuals.js"></script>
   <script defer src="app.js"></script>
 </head>
@@ -22,20 +29,21 @@
     <div class="sidebar-label">YOUR WORKSPACE</div>
     <nav class="workspace" aria-label="Workspace">
       <a href="#home" data-page="home"><span aria-hidden="true">⌂</span> Learning path</a>
-      <a href="#practice" data-page="practice"><span aria-hidden="true">▦</span> Practice ground <small>144</small></a>
+      <a href="#practice" data-page="practice"><span aria-hidden="true">▦</span> Coding exercises <small>18</small></a>
       <a href="#notebook" data-page="notebook"><span aria-hidden="true">▤</span> My field notebook</a>
       <a href="#resources" data-page="resources"><span aria-hidden="true">↗</span> Reference shelf</a>
+      <a href="#reference" data-page="reference"><span aria-hidden="true">≡</span> Complete note & coverage</a>
     </nav>
     <div class="sidebar-label">EXPLORE THE COURSE</div>
     <nav id="lesson-nav" class="lesson-nav" aria-label="Lessons"></nav>
-    <div class="sidebar-bottom"><span class="live-dot"></span> Built for curious developers.<br><small>No account. Your progress stays here.</small></div>
+    <div class="sidebar-bottom"><span class="live-dot"></span> Start curious. No GIS experience needed.<br><small>No account. Your progress stays here.</small></div>
   </aside>
   <button type="button" class="nav-backdrop" id="nav-backdrop" aria-label="Close navigation" tabindex="-1" hidden></button>
   <div class="page-shell">
     <header class="topbar">
       <button id="menu" class="icon-button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar">☰</button>
       <div class="breadcrumb">THE FIELD GUIDE <span>/</span> <span id="breadcrumb">Learning path</span></div>
-      <a class="top-progress" href="#notebook"><span id="total-progress">0 / 144 checks</span><span class="avatar" aria-hidden="true">You</span></a>
+      <a class="top-progress" href="#notebook"><span id="total-progress">0 / 18 programs</span><span class="avatar" aria-hidden="true">You</span></a>
     </header>
     <main id="main" tabindex="-1"></main>
     <footer>Made for learning, not just scrolling. <a href="core-geospatial-concepts.md">Based on Core Geospatial Concepts ↗</a></footer>

@@ -1,0 +1,25 @@
+/* Every source heading has an explicit home. New/unmapped headings fail the build. */
+module.exports = {
+  overview: ['geometry'],
+  '1': ['geometry'], '1.1': ['geometry'], '1.2': ['qgis'], '1.3': ['geometry'], '1.4': ['geometry'],
+  '2': ['earth'], '2.1': ['earth'], '2.2': ['crs','projections'], '2.3': ['axes'],
+  '2.4': ['geometry','topology'], '2.5': ['vector-raster'], '2.6': ['precision'], '2.7': ['cartography'],
+  '3': ['crs'], '3.1': ['crs'], '3.2': ['geometry'], '3.3': ['debugging','transformations'],
+  '3.4': ['transformations'], '3.5': ['formats'],
+  '4': ['algorithms'], '4.1': ['distances'], '4.2': ['projections'], '4.3': ['transformations','earth'],
+  '4.4': ['algorithms'], '4.4.1': ['algorithms'], '4.4.2': ['algorithms'],
+  '4.4.3': ['algorithms','topology'], '4.4.4': ['topology'], '4.4.5': ['geometry'], '4.4.6': ['algorithms'],
+  '4.5': ['vector-raster'], '4.5.1': ['geotransform'], '4.5.2': ['resampling'], '4.5.3': ['vector-raster','formats'],
+  '4.6': ['precision'], '4.7': ['cartography'], '4.7.1': ['cartography'], '4.7.2': ['cartography','algorithms'],
+  '4.8': ['formats','transformations'], '4.9': ['qgis'],
+  '5': ['debugging'], '5.1': ['axes','debugging'], '5.2': ['axes','debugging'], '5.3': ['axes','debugging'],
+  '5.4': ['transformations'], '5.5': ['projections'], '5.6': ['distances'], '5.7': ['distances'],
+  '5.8': ['formats'], '5.9': ['debugging'],
+  '6': ['debugging'], '6.1': ['debugging'], '6.2': ['debugging'], '6.3': ['debugging'],
+  '7': ['coverage'], 'exercise-1': ['crs','precision','qgis'], 'exercise-2': ['axes','transformations','distances'],
+  'exercise-3': ['geometry','algorithms','topology'], 'exercise-4': ['coverage','geotransform','resampling','cartography'],
+  '8': ['coverage'], 'solution-1': ['crs','precision','qgis'], 'solution-2': ['axes','transformations','distances'],
+  'solution-3': ['geometry','algorithms','topology'], 'solution-4': ['coverage','geotransform','resampling','cartography'],
+  '9': ['debugging'], '9.1': ['debugging'], '9.2': ['debugging'], '9.3': ['debugging'], '9.4': ['debugging'],
+  'appendix-a': ['algorithms','distances']
+};
