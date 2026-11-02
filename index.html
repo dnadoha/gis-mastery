@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Learn GIS through Bangladeshi analogies, credited reference images, visual labs and 198 exercises based on Core Geospatial Concepts.">
+  <title>Fieldnotes — Learn GIS by doing</title>
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="course.js"></script>
+  <script defer src="geo.js"></script>
+  <script defer src="bangladesh.js"></script>
+  <script defer src="teaching.js"></script>
+  <script defer src="visuals.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <aside class="sidebar" id="sidebar">
+    <a href="#home" class="brand"><img src="assets/mark.svg" width="35" height="35" alt=""><span>fieldnotes<span class="brand-sub">THE GEOSPATIAL FIELD GUIDE</span></span></a>
+    <button type="button" class="mobile-nav-close" id="close-menu">Close navigation ×</button>
+    <div class="sidebar-label">YOUR WORKSPACE</div>
+    <nav class="workspace" aria-label="Workspace">
+      <a href="#home" data-page="home"><span aria-hidden="true">⌂</span> Learning path</a>
+      <a href="#practice" data-page="practice"><span aria-hidden="true">▦</span> Practice ground <small>144</small></a>
+      <a href="#notebook" data-page="notebook"><span aria-hidden="true">▤</span> My field notebook</a>
+      <a href="#resources" data-page="resources"><span aria-hidden="true">↗</span> Reference shelf</a>
+    </nav>
+    <div class="sidebar-label">EXPLORE THE COURSE</div>
+    <nav id="lesson-nav" class="lesson-nav" aria-label="Lessons"></nav>
+    <div class="sidebar-bottom"><span class="live-dot"></span> Built for curious developers.<br><small>No account. Your progress stays here.</small></div>
+  </aside>
+  <button type="button" class="nav-backdrop" id="nav-backdrop" aria-label="Close navigation" tabindex="-1" hidden></button>
+  <div class="page-shell">
+    <header class="topbar">
+      <button id="menu" class="icon-button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar">☰</button>
+      <div class="breadcrumb">THE FIELD GUIDE <span>/</span> <span id="breadcrumb">Learning path</span></div>
+      <a class="top-progress" href="#notebook"><span id="total-progress">0 / 144 checks</span><span class="avatar" aria-hidden="true">You</span></a>
+    </header>
+    <main id="main" tabindex="-1"></main>
+    <footer>Made for learning, not just scrolling. <a href="core-geospatial-concepts.md">Based on Core Geospatial Concepts ↗</a></footer>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+</body>
+</html>
