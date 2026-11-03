@@ -65,6 +65,12 @@ Opening a solution does not mark an exercise complete. Completion is self-report
 - `scripts/build-reference.cjs` and `scripts/reference-map.cjs`: compile the full source into explicit chapter mappings, rendered equations/diagrams, downloadable code and the coverage report. A new unmapped heading fails the build.
 - `assets/vendor/`: local KaTeX styles/fonts and rendering-tool licences. Build dependencies are pinned in `package-lock.json`; no Markdown, math or diagram engine runs in the browser.
 
+## Deploy on Vercel
+
+Import this repository with its root as the Vercel project root. `vercel.json` deploys the committed static files directly, skipping dependency installation and the build command. Vercel does not need Chromium or Puppeteer; running `npm run build` there can fail because the build image lacks Chrome's shared libraries (such as `libnspr4.so`).
+
+After editing generated content, run the rebuild steps below locally, run `npm test`, and commit the regenerated files before deploying. Redeploy on Vercel after committing this configuration. The local `npm run build` command is unchanged.
+
 ## Rebuild after editing content
 
 Node 22.13+ and Chromium are needed to rebuild the complete technical reading:
