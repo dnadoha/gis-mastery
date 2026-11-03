@@ -61,7 +61,7 @@ ${previous?`[← ${previous.short}](#topic-${previous.id}) · `:''}${next?`[Next
 
 **Full detail for this chapter:** ${reference.sections.filter(s=>s.topics.includes(topic.id)).map(s=>`[${s.title.replace(/`/g,'')}](#${s.anchor})`).join(' · ')}.
 
-**Programming exercise:** [${programming.lessons[topic.id].title}](index.html#lesson/${topic.id}/practice). Download the [Python starter](exercises/python/${programming.filename(topic.id,'python')}) or [Go starter](exercises/go/${programming.filename(topic.id,'go')}); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [${programming.lessons[topic.id].title}](index.html#lesson/${topic.id}/practice). Download the [Python starter](exercises/python/${programming.filepath(topic.id,'python')}) or [Go starter](exercises/go/${programming.filepath(topic.id,'go')}); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 `;

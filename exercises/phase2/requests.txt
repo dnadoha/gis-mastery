@@ -1,0 +1,29 @@
+# Templates only. example.org is not a deployed service. Read capabilities for
+# real endpoints, layer names, namespaces, output formats and matrix identifiers.
+
+# Exercise 2 a: WMS 1.3.0 EPSG:4326, LATITUDE first
+https://example.org/ows?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=parcels&STYLES=&CRS=EPSG:4326&BBOX=52.3728,4.892,52.3744,4.8945&WIDTH=512&HEIGHT=512&FORMAT=image/png
+
+# b: WMS 1.1.1, LONGITUDE first and SRS rather than CRS
+https://example.org/ows?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=parcels&STYLES=&SRS=EPSG:4326&BBOX=4.892,52.3728,4.8945,52.3744&WIDTH=512&HEIGHT=512&FORMAT=image/png
+
+# c: WMS 1.3.0 CRS:84, LONGITUDE first
+https://example.org/ows?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=parcels&STYLES=&CRS=CRS:84&BBOX=4.892,52.3728,4.8945,52.3744&WIDTH=512&HEIGHT=512&FORMAT=image/png
+
+# d: projected tile 14/8414/5384 (x/y metres)
+https://example.org/ows?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=parcels&STYLES=&CRS=EPSG:3857&BBOX=543008.649,6865879.629,545454.634,6868325.614&WIDTH=256&HEIGHT=256&FORMAT=image/png
+https://example.org/ows?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetTile&LAYER=parcels&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX=14&TILEROW=5384&TILECOL=8414&FORMAT=image/png
+
+# Exercise 5: discover each classic service before constructing requests
+https://example.org/ows?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities
+https://example.org/ows?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities
+https://example.org/ows?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetCapabilities
+
+# OGC API: discover linked conformance, collections and OpenAPI resources first
+https://example.org/features/
+https://example.org/features/conformance
+https://example.org/features/collections/parcels/items?limit=100&bbox=4.892,52.3728,4.8945,52.3744
+# Follow the actual response's rel=next link. Do not invent paging URLs.
+
+# Classic WFS 2.0 using authority-axis EPSG:4326 (LATITUDE first)
+https://example.org/ows?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&TYPENAMES=ns:parcels&COUNT=100&STARTINDEX=0&OUTPUTFORMAT=application/json&SRSNAME=urn:ogc:def:crs:EPSG::4326&BBOX=52.3728,4.892,52.3744,4.8945,urn:ogc:def:crs:EPSG::4326

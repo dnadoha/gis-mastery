@@ -33,8 +33,37 @@ test('18 unique topics with Python/Go challenges and 54 substantive field tasks'
 test('all 72 downloadable programs match the visible exercise definitions',()=>{
   const programming=context.programming;
   for(const t of topics)for(const language of ['python','go'])for(const solution of [false,true]){
-    const file=path.join(root,'exercises',solution?'solutions':'',language,programming.filename(t.id,language));
+    const file=path.join(root,'exercises',solution?'solutions':'',language,programming.filepath(t.id,language));
     assert.equal(fs.readFileSync(file,'utf8'),programming.file(t.id,language,solution),`Stale download: ${file}`);
+  }
+});
+
+test('Go exercises have separate package directories with no shared declarations',()=>{
+  const readme=fs.readFileSync(path.join(root,'exercises/README.md'),'utf8');
+  for(const directory of ['exercises/go','exercises/solutions/go']){
+    const base=path.join(root,directory);
+    assert.deepEqual(fs.readdirSync(base).filter(file=>file.endsWith('.go')),[],`${directory} must not contain multiple standalone programs`);
+    for(const topic of topics){
+      const files=fs.readdirSync(path.join(base,topic.id)).filter(file=>file.endsWith('.go'));
+      assert.deepEqual(files,[context.programming.filename(topic.id,'go')]);
+      assert.equal(context.programming.filepath(topic.id,'go'),`${topic.id}/${files[0]}`);
+      assert.ok(readme.includes(`](${directory.replace('exercises/','')}/${topic.id}/${files[0]})`));
+    }
+  }
+});
+
+test('exercise UI downloads link to the deployed starter and solution files',()=>{
+  const programming=context.programming;
+  const app={state:{coding:{}},storageAvailable:true,escape:value=>String(value)};
+  const coding=vm.runInNewContext(fs.readFileSync(path.join(root,'coding.js'),'utf8')+';Coding',{Programming:programming,App:app});
+  for(const topic of topics)for(const language of ['python','go']){
+    app.state.coding[programming.id(topic.id)]={language};
+    const html=coding.html(topic);
+    for(const directory of ['exercises','exercises/solutions']){
+      const file=`${directory}/${language}/${programming.filepath(topic.id,language)}`;
+      assert.ok(html.includes(`href="${file}"`),`Missing download link: ${file}`);
+      assert.ok(fs.existsSync(path.join(root,file)),`Missing deployed file: ${file}`);
+    }
   }
 });
 

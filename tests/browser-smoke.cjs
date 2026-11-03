@@ -173,7 +173,7 @@ async function navigate(url) { const loaded=once('Page.loadEventFired');await se
   check('Coverage browser lab shows exact default totals',await evaluate('document.querySelector(".lab-output").textContent.includes("270,955") && document.querySelector(".lab-output").textContent.includes("22,497")'));
   await route('#resources');
   for(const file of ['data/neighbourhood-school.csv','data/stations.csv','data/stations_mixed.csv','data/stations_raw.csv','data/geolib.py','core-geospatial-concepts.md','beginner-geospatial-guide.md','SOURCE-COVERAGE.md']) check(`Download exists: ${file}`,(await fetch(url+file)).status,200);
-  const programFiles=await evaluate('Object.keys(Programming.lessons).flatMap(id=>Object.keys(Programming.languages).flatMap(language=>["exercises/"+language+"/"+Programming.filename(id,language),"exercises/solutions/"+language+"/"+Programming.filename(id,language)]))');
+  const programFiles=await evaluate('Object.keys(Programming.lessons).flatMap(id=>Object.keys(Programming.languages).flatMap(language=>["exercises/"+language+"/"+Programming.filepath(id,language),"exercises/solutions/"+language+"/"+Programming.filepath(id,language)]))');
   for(const file of programFiles){const response=await fetch(url+file);assert.equal(response.status,200,file);assert.ok((await response.text()).includes('All checks passed'),file);}
   check('All 72 starter/solution downloads are served with their runnable checks',true);
 

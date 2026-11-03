@@ -5,7 +5,7 @@ const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const sha=value=>crypto.createHash('sha256').update(value).digest('hex');
 const slug=value=>value.toLowerCase().replace(/[^\p{L}\p{N}_\- ]/gu,'').replace(/ /g,'-');
 
-function splitSource(source) {
+function splitSource(source,sourceMapping=mapping) {
   const sections=[];let offset=0,fence=null;
   for(const line of source.match(/[^\n]*\n|[^\n]+$/g)||[]) {
     const marker=line.match(/^\s*(`{3,}|~{3,})/);
@@ -18,9 +18,9 @@ function splitSource(source) {
         const title=heading[2],number=title.match(/^(\d+(?:\.\d+)*)(?:\.?\s)/)?.[1];
         const named=title.match(/^(Exercise|Solution) (\d+)/i);
         const key=heading[1].length===1?'overview':number|| (named?`${named[1].toLowerCase()}-${named[2]}`:title.startsWith('Appendix A')?'appendix-a':null);
-        if(!mapping[key])throw Error(`Unmapped source heading: ${title}`);
+        if(!sourceMapping[key])throw Error(`Unmapped source heading: ${title}`);
         if(sections.some(s=>s.key===key))throw Error(`Duplicate source key: ${key}`);
-        sections.push({key,id:key.replaceAll('.','-'),title,anchor:slug(title),depth:heading[1].length,start:offset,topics:mapping[key]});
+        sections.push({key,id:key.replaceAll('.','-'),title,anchor:slug(title),depth:heading[1].length,start:offset,topics:sourceMapping[key]});
       }
     }
     offset+=line.length;
@@ -32,7 +32,7 @@ function splitSource(source) {
     s.lineEnd=s.lineStart+s.markdown.replace(/\n$/,'').split('\n').length-1;
   }
   if(sections.map(s=>s.markdown).join('')!==source)throw Error('Source text was lost during sectioning');
-  for(const key of Object.keys(mapping))if(!sections.some(s=>s.key===key))throw Error(`Stale source mapping: ${key}`);
+  for(const key of Object.keys(sourceMapping))if(!sections.some(s=>s.key===key))throw Error(`Stale source mapping: ${key}`);
   return sections;
 }
 

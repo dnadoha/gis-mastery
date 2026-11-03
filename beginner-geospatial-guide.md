@@ -86,7 +86,7 @@ No. The name is an attribute. Its position can stay the same.
 
 **Full detail for this chapter:** [Core Geospatial Concepts for GIS Developers](#core-geospatial-concepts-for-gis-developers) · [1. Learning objectives, prerequisites and expected outcomes](#1-learning-objectives-prerequisites-and-expected-outcomes) · [1.1 Learning objectives](#11-learning-objectives) · [1.3 Expected outcomes](#13-expected-outcomes) · [1.4 Suggested study plan](#14-suggested-study-plan) · [2.4 The geometry model: OGC Simple Features](#24-the-geometry-model-ogc-simple-features) · [3.2 Geometry type hierarchy (OGC Simple Features)](#32-geometry-type-hierarchy-ogc-simple-features) · [4.4.5 Validity checks in code](#445-validity-checks-in-code) · [Exercise 3: Geometry model, validity and spatial relationships (Advanced)](#exercise-3-geometry-model-validity-and-spatial-relationships-advanced) · [Solution 3](#solution-3).
 
-**Programming exercise:** [Find the neighbourhood’s bounding box](index.html#lesson/geometry/practice). Download the [Python starter](exercises/python/geometry.py) or [Go starter](exercises/go/geometry.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Find the neighbourhood’s bounding box](index.html#lesson/geometry/practice). Download the [Python starter](exercises/python/geometry.py) or [Go starter](exercises/go/geometry/geometry.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -139,7 +139,7 @@ The required number order is called `axis order`. Some tools expect the opposite
 
 **Full detail for this chapter:** [2.3 Axis order: latitude/longitude vs. longitude/latitude](#23-axis-order-latitudelongitude-vs-longitudelatitude) · [5.1 Scenario](#51-scenario) · [5.2 Step 1: Inspect the numbers](#52-step-1-inspect-the-numbers) · [5.3 Step 2: Test both axis hypotheses against the expected area](#53-step-2-test-both-axis-hypotheses-against-the-expected-area) · [Exercise 2: Axis order, reprojection and measuring the distortion (Intermediate)](#exercise-2-axis-order-reprojection-and-measuring-the-distortion-intermediate) · [Solution 2](#solution-2).
 
-**Programming exercise:** [Resolve swapped coordinate fields](index.html#lesson/axes/practice). Download the [Python starter](exercises/python/axes.py) or [Go starter](exercises/go/axes.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Resolve swapped coordinate fields](index.html#lesson/axes/practice). Download the [Python starter](exercises/python/axes.py) or [Go starter](exercises/go/axes/axes.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -192,7 +192,7 @@ Check the starting reference and units in each report. Different reference surfa
 
 **Full detail for this chapter:** [2. Conceptual foundations](#2-conceptual-foundations) · [2.1 Modelling the Earth: geoid, ellipsoid, datum](#21-modelling-the-earth-geoid-ellipsoid-datum) · [4.3 Datum transformations and PROJ pipelines](#43-datum-transformations-and-proj-pipelines).
 
-**Programming exercise:** [Convert GPS height to geoid-referenced height](index.html#lesson/earth/practice). Download the [Python starter](exercises/python/earth.py) or [Go starter](exercises/go/earth.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Convert GPS height to geoid-referenced height](index.html#lesson/earth/practice). Download the [Python starter](exercises/python/earth.py) or [Go starter](exercises/go/earth/earth.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -245,7 +245,7 @@ No. Its geographic coordinates use degrees. We will choose a suitable metre-base
 
 **Full detail for this chapter:** [2.2 Coordinate reference systems (CRS)](#22-coordinate-reference-systems-crs) · [3. Visual explanations](#3-visual-explanations) · [3.1 Conceptual overview: from the Earth to a styled map](#31-conceptual-overview-from-the-earth-to-a-styled-map) · [Exercise 1: CRS literacy, precision and your first QGIS session (Beginner)](#exercise-1-crs-literacy-precision-and-your-first-qgis-session-beginner) · [Solution 1](#solution-1).
 
-**Programming exercise:** [Guard a metre-based analysis function](index.html#lesson/crs/practice). Download the [Python starter](exercises/python/crs.py) or [Go starter](exercises/go/crs.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Guard a metre-based analysis function](index.html#lesson/crs/practice). Download the [Python starter](exercises/python/crs.py) or [Go starter](exercises/go/crs/crs.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -298,7 +298,7 @@ WGS 84 / UTM 46N, identified by EPSG:32646.
 
 **Full detail for this chapter:** [2.2 Coordinate reference systems (CRS)](#22-coordinate-reference-systems-crs) · [4.2 Map projections in practice](#42-map-projections-in-practice) · [5.5 Step 4: Pick a CRS for measurement and project](#55-step-4-pick-a-crs-for-measurement-and-project).
 
-**Programming exercise:** [Choose a UTM zone, including the exceptions](index.html#lesson/projections/practice). Download the [Python starter](exercises/python/projections.py) or [Go starter](exercises/go/projections.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Choose a UTM zone, including the exceptions](index.html#lesson/projections/practice). Download the [Python starter](exercises/python/projections.py) or [Go starter](exercises/go/projections/projections.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -351,7 +351,7 @@ No. A label cannot perform the coordinate calculation.
 
 **Full detail for this chapter:** [3.3 Workflow: diagnosing "my data is in the wrong place"](#33-workflow-diagnosing-my-data-is-in-the-wrong-place) · [3.4 Sequence: what happens during a reprojection](#34-sequence-what-happens-during-a-reprojection) · [4.3 Datum transformations and PROJ pipelines](#43-datum-transformations-and-proj-pipelines) · [4.8 File formats and spatial databases](#48-file-formats-and-spatial-databases) · [5.4 Step 3: Normalise and label (assign, do not transform)](#54-step-3-normalise-and-label-assign-do-not-transform) · [Exercise 2: Axis order, reprojection and measuring the distortion (Intermediate)](#exercise-2-axis-order-reprojection-and-measuring-the-distortion-intermediate) · [Solution 2](#solution-2).
 
-**Programming exercise:** [Transform a local drawing’s coordinates](index.html#lesson/transformations/practice). Download the [Python starter](exercises/python/transformations.py) or [Go starter](exercises/go/transformations.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Transform a local drawing’s coordinates](index.html#lesson/transformations/practice). Download the [Python starter](exercises/python/transformations.py) or [Go starter](exercises/go/transformations/transformations.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -404,7 +404,7 @@ Yes. Its direct distance is 100 m, which is less than 200 m.
 
 **Full detail for this chapter:** [4.1 Geographic coordinates: lengths of degrees and distances on the ellipsoid](#41-geographic-coordinates-lengths-of-degrees-and-distances-on-the-ellipsoid) · [5.6 Step 5: Distances computed four ways](#56-step-5-distances-computed-four-ways) · [5.7 Step 6: Areas computed four ways](#57-step-6-areas-computed-four-ways) · [Exercise 2: Axis order, reprojection and measuring the distortion (Intermediate)](#exercise-2-axis-order-reprojection-and-measuring-the-distortion-intermediate) · [Solution 2](#solution-2) · [Appendix A — Reference implementation (geolib.py)](#appendix-a--reference-implementation-geolibpy).
 
-**Programming exercise:** [Measure home-to-school distance](index.html#lesson/distances/practice). Download the [Python starter](exercises/python/distances.py) or [Go starter](exercises/go/distances.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Measure home-to-school distance](index.html#lesson/distances/practice). Download the [Python starter](exercises/python/distances.py) or [Go starter](exercises/go/distances/distances.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -457,7 +457,7 @@ They are precise because they agree, but inaccurate relative to the known entran
 
 **Full detail for this chapter:** [2.6 Scale, accuracy, precision and resolution](#26-scale-accuracy-precision-and-resolution) · [4.6 Scale, precision and numeric representation](#46-scale-precision-and-numeric-representation) · [Exercise 1: CRS literacy, precision and your first QGIS session (Beginner)](#exercise-1-crs-literacy-precision-and-your-first-qgis-session-beginner) · [Solution 1](#solution-1).
 
-**Programming exercise:** [Compare positions using a distance tolerance](index.html#lesson/precision/practice). Download the [Python starter](exercises/python/precision.py) or [Go starter](exercises/go/precision.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Compare positions using a distance tolerance](index.html#lesson/precision/practice). Download the [Python starter](exercises/python/precision.py) or [Go starter](exercises/go/precision/precision.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -510,7 +510,7 @@ It means 10 people in the whole 100 m by 100 m cell, not 10 people at every posi
 
 **Full detail for this chapter:** [2.5 Raster vs. vector](#25-raster-vs-vector) · [4.5 Raster internals: geotransform, resampling, storage](#45-raster-internals-geotransform-resampling-storage) · [4.5.3 Size arithmetic and storage](#453-size-arithmetic-and-storage).
 
-**Programming exercise:** [Budget raster memory before allocating it](index.html#lesson/vector-raster/practice). Download the [Python starter](exercises/python/vector_raster.py) or [Go starter](exercises/go/vector_raster.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Budget raster memory before allocating it](index.html#lesson/vector-raster/practice). Download the [Python starter](exercises/python/vector_raster.py) or [Go starter](exercises/go/vector-raster/vector_raster.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -563,7 +563,7 @@ We will test these centres against our school-distance rule. This treats all 10 
 
 **Full detail for this chapter:** [4.5.1 The geotransform](#451-the-geotransform) · [Exercise 4: Applied challenge, a service-coverage audit (Applied)](#exercise-4-applied-challenge-a-service-coverage-audit-applied) · [Solution 4](#solution-4).
 
-**Programming exercise:** [Locate a raster cell’s centre](index.html#lesson/geotransform/practice). Download the [Python starter](exercises/python/geotransform.py) or [Go starter](exercises/go/geotransform.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Locate a raster cell’s centre](index.html#lesson/geotransform/practice). Download the [Python starter](exercises/python/geotransform.py) or [Go starter](exercises/go/geotransform/geotransform.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -616,7 +616,7 @@ It would represent only 10 of the original 40 people. The grid change would inco
 
 **Full detail for this chapter:** [4.5.2 Resampling](#452-resampling) · [Exercise 4: Applied challenge, a service-coverage audit (Applied)](#exercise-4-applied-challenge-a-service-coverage-audit-applied) · [Solution 4](#solution-4).
 
-**Programming exercise:** [Coarsen population cells without losing people](index.html#lesson/resampling/practice). Download the [Python starter](exercises/python/resampling.py) or [Go starter](exercises/go/resampling.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Coarsen population cells without losing people](index.html#lesson/resampling/practice). Download the [Python starter](exercises/python/resampling.py) or [Go starter](exercises/go/resampling/resampling.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -669,7 +669,7 @@ No. It is the same cell and the same people. We must count it once when asking a
 
 **Full detail for this chapter:** [2.4 The geometry model: OGC Simple Features](#24-the-geometry-model-ogc-simple-features) · [4.4.3 Point-in-polygon (ray casting, even-odd rule)](#443-point-in-polygon-ray-casting-even-odd-rule) · [4.4.4 Spatial relationships: the DE-9IM](#444-spatial-relationships-the-de-9im) · [Exercise 3: Geometry model, validity and spatial relationships (Advanced)](#exercise-3-geometry-model-validity-and-spatial-relationships-advanced) · [Solution 3](#solution-3).
 
-**Programming exercise:** [Distinguish a park’s interior, edge and exterior](index.html#lesson/topology/practice). Download the [Python starter](exercises/python/topology.py) or [Go starter](exercises/go/topology.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Distinguish a park’s interior, edge and exterior](index.html#lesson/topology/practice). Download the [Python starter](exercises/python/topology.py) or [Go starter](exercises/go/topology/topology.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -722,7 +722,7 @@ Yes. It is inside the allowed distance.
 
 **Full detail for this chapter:** [4. Technical deep dive](#4-technical-deep-dive) · [4.4 Geometry algorithms and spatial relationships](#44-geometry-algorithms-and-spatial-relationships) · [4.4.1 Orientation test and segment intersection](#441-orientation-test-and-segment-intersection) · [4.4.2 Area and centroid of a simple polygon (shoelace formula)](#442-area-and-centroid-of-a-simple-polygon-shoelace-formula) · [4.4.3 Point-in-polygon (ray casting, even-odd rule)](#443-point-in-polygon-ray-casting-even-odd-rule) · [4.4.6 Simplification, buffering and units](#446-simplification-buffering-and-units) · [4.7.2 Label anchors: centroid vs. representative point](#472-label-anchors-centroid-vs-representative-point) · [Exercise 3: Geometry model, validity and spatial relationships (Advanced)](#exercise-3-geometry-model-validity-and-spatial-relationships-advanced) · [Solution 3](#solution-3) · [Appendix A — Reference implementation (geolib.py)](#appendix-a--reference-implementation-geolibpy).
 
-**Programming exercise:** [Implement signed polygon area](index.html#lesson/algorithms/practice). Download the [Python starter](exercises/python/algorithms.py) or [Go starter](exercises/go/algorithms.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Implement signed polygon area](index.html#lesson/algorithms/practice). Download the [Python starter](exercises/python/algorithms.py) or [Go starter](exercises/go/algorithms/algorithms.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -775,7 +775,7 @@ It includes the same 40 people in the shared cells twice. The unique selected to
 
 **Full detail for this chapter:** [7. Progressive exercises](#7-progressive-exercises) · [Exercise 4: Applied challenge, a service-coverage audit (Applied)](#exercise-4-applied-challenge-a-service-coverage-audit-applied) · [8. Solutions and explanations](#8-solutions-and-explanations) · [Solution 4](#solution-4).
 
-**Programming exercise:** [Count people near either school exactly once](index.html#lesson/coverage/practice). Download the [Python starter](exercises/python/coverage.py) or [Go starter](exercises/go/coverage.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Count people near either school exactly once](index.html#lesson/coverage/practice). Download the [Python starter](exercises/python/coverage.py) or [Go starter](exercises/go/coverage/coverage.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -828,7 +828,7 @@ No. Both contain 10 people. Green only means the cell centre satisfies our schoo
 
 **Full detail for this chapter:** [2.7 Basic cartography](#27-basic-cartography) · [4.7 Classification and labelling algorithms](#47-classification-and-labelling-algorithms) · [4.7.1 Classification methods](#471-classification-methods) · [4.7.2 Label anchors: centroid vs. representative point](#472-label-anchors-centroid-vs-representative-point) · [Exercise 4: Applied challenge, a service-coverage audit (Applied)](#exercise-4-applied-challenge-a-service-coverage-audit-applied) · [Solution 4](#solution-4).
 
-**Programming exercise:** [Give class boundaries one consistent meaning](index.html#lesson/cartography/practice). Download the [Python starter](exercises/python/cartography.py) or [Go starter](exercises/go/cartography.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Give class boundaries one consistent meaning](index.html#lesson/cartography/practice). Download the [Python starter](exercises/python/cartography.py) or [Go starter](exercises/go/cartography/cartography.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -881,7 +881,7 @@ No. Use the accompanying source information. This teaching file is explicitly do
 
 **Full detail for this chapter:** [3.5 Data model: GeoPackage metadata tables (simplified)](#35-data-model-geopackage-metadata-tables-simplified) · [4.5.3 Size arithmetic and storage](#453-size-arithmetic-and-storage) · [4.8 File formats and spatial databases](#48-file-formats-and-spatial-databases) · [5.8 Step 7: Same results in SQL (PostGIS)](#58-step-7-same-results-in-sql-postgis).
 
-**Programming exercise:** [Serialize School A as GeoJSON](index.html#lesson/formats/practice). Download the [Python starter](exercises/python/formats.py) or [Go starter](exercises/go/formats.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Serialize School A as GeoJSON](index.html#lesson/formats/practice). Download the [Python starter](exercises/python/formats.py) or [Go starter](exercises/go/formats/formats.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -936,7 +936,7 @@ lon goes into X. lat goes into Y. The geometry CRS is EPSG:4326.
 
 **Full detail for this chapter:** [1.2 Prerequisites](#12-prerequisites) · [4.9 Hands-on lab: QGIS as a visual debugger for your future code](#49-hands-on-lab-qgis-as-a-visual-debugger-for-your-future-code) · [Exercise 1: CRS literacy, precision and your first QGIS session (Beginner)](#exercise-1-crs-literacy-precision-and-your-first-qgis-session-beginner) · [Solution 1](#solution-1).
 
-**Programming exercise:** [Prepare density attributes for QGIS](index.html#lesson/qgis/practice). Download the [Python starter](exercises/python/qgis.py) or [Go starter](exercises/go/qgis.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Prepare density attributes for QGIS](index.html#lesson/qgis/practice). Download the [Python starter](exercises/python/qgis.py) or [Go starter](exercises/go/qgis/qgis.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 
@@ -989,7 +989,7 @@ The schools share four selected cells, or 40 people. Those people appeared in bo
 
 **Full detail for this chapter:** [3.3 Workflow: diagnosing "my data is in the wrong place"](#33-workflow-diagnosing-my-data-is-in-the-wrong-place) · [5. Worked GIS example: "Why are my stations in the Indian Ocean?"](#5-worked-gis-example-why-are-my-stations-in-the-indian-ocean) · [5.1 Scenario](#51-scenario) · [5.2 Step 1: Inspect the numbers](#52-step-1-inspect-the-numbers) · [5.3 Step 2: Test both axis hypotheses against the expected area](#53-step-2-test-both-axis-hypotheses-against-the-expected-area) · [5.9 Conclusions of the example](#59-conclusions-of-the-example) · [6. Common pitfalls and best practices](#6-common-pitfalls-and-best-practices) · [6.1 Pitfall catalogue](#61-pitfall-catalogue) · [6.2 Best practices](#62-best-practices) · [6.3 A minimal ingest-validation function](#63-a-minimal-ingest-validation-function) · [9. Summary, glossary and further reading](#9-summary-glossary-and-further-reading) · [9.1 Key takeaways](#91-key-takeaways) · [9.2 Glossary](#92-glossary) · [9.3 Further reading and authoritative references](#93-further-reading-and-authoritative-references) · [9.4 Where to go next](#94-where-to-go-next).
 
-**Programming exercise:** [Audit coordinates before they reach the map](index.html#lesson/debugging/practice). Download the [Python starter](exercises/python/debugging.py) or [Go starter](exercises/go/debugging.go); both include runnable checks. [Setup and solution files](exercises/README.md).
+**Programming exercise:** [Audit coordinates before they reach the map](index.html#lesson/debugging/practice). Download the [Python starter](exercises/python/debugging.py) or [Go starter](exercises/go/debugging/debugging.go); both include runnable checks. [Setup and solution files](exercises/README.md).
 
 ---
 

@@ -5,7 +5,7 @@ const root=path.resolve(__dirname,'..');
 const programming=vm.runInNewContext(fs.readFileSync(path.join(root,'programming.js'),'utf8')+';Programming');
 let passed=0;
 for(const [id] of Object.entries(programming.lessons))for(const language of Object.keys(programming.languages))for(const solution of [true,false]) {
-  const file=path.join(root,'exercises',solution?'solutions':'',language,programming.filename(id,language));
+  const file=path.join(root,'exercises',solution?'solutions':'',language,programming.filepath(id,language));
   assert.equal(fs.readFileSync(file,'utf8'),programming.file(id,language,solution),`Stale download: ${file}`);
   const command=language==='python'?(process.env.PYTHON||'python3'):'go';
   const args=language==='python'?[file]:['run',file];

@@ -1,0 +1,16 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {"type": "Feature", "id": 1,
+     "properties": {"parcel_id": "P001", "land_use_class": "residential", "population_total": 120, "population_density": 5400.5},
+     "geometry": {"type": "Polygon", "coordinates": [[[4.8920,52.3728],[4.8930,52.3728],[4.8930,52.3734],[4.8920,52.3734],[4.8920,52.3728]]]}},
+    {"type": "Feature", "id": 2,
+     "properties": {"parcel_id": "P002", "land_use_class": "commercial", "population_total": 15, "population_density": 800.0},
+     "geometry": {"type": "Polygon", "coordinates": [[[4.8935,52.3728],[4.8935,52.3734],[4.8945,52.3734],[4.8945,52.3728],[4.8935,52.3728]]]}},
+    {"type": "Feature", "id": 3,
+     "properties": {"parcel_id": "P003", "land_use_class": "park", "population_total": null, "population_density": null},
+     "geometry": {"type": "Polygon", "coordinates": [
+        [[4.8920,52.3736],[4.8940,52.3736],[4.8940,52.3744],[4.8920,52.3744],[4.8920,52.3736]],
+        [[4.8927,52.3739],[4.8927,52.3741],[4.8933,52.3741],[4.8933,52.3739],[4.8927,52.3739]]]}}
+  ]
+}

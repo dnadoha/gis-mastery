@@ -471,6 +471,7 @@ check(points[1], []float64{52.3791,4.9003})`}
   },
   id(topic) { return `${topic}-coding-v1`; },
   filename(topic,language) { return `${topic.replaceAll('-','_')}.${this.languages[language].extension}`; },
+  filepath(topic,language) { return language==='go'?`${topic}/${this.filename(topic,language)}`:this.filename(topic,language); },
   implementation(topic,language,solution=false) {
     const code=this.lessons[topic][language];
     return language==='python'?`${code.signature}\n${solution?code.body:'    # TODO: implement the contract above.\n    raise NotImplementedError("Implement this function")'}\n`:

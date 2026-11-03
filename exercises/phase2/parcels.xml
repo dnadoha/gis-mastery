@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Abridged teaching example: NOT schema-complete or INSPIRE-conformant.
+     Replace the illustrative date and lineage with actual production facts. -->
+<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco">
+  <gmd:fileIdentifier><gco:CharacterString>phase2-demo-parcels</gco:CharacterString></gmd:fileIdentifier>
+  <gmd:identificationInfo>
+    <gmd:MD_DataIdentification>
+      <gmd:citation><gmd:CI_Citation>
+        <gmd:title><gco:CharacterString>Three synthetic Amsterdam parcels — teaching example</gco:CharacterString></gmd:title>
+        <gmd:date><gmd:CI_Date>
+          <gmd:date><gco:Date>2026-11-03</gco:Date></gmd:date>
+          <gmd:dateType><gmd:CI_DateTypeCode codeList="https://standards.iso.org/iso/19139/resources/gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation">creation</gmd:CI_DateTypeCode></gmd:dateType>
+        </gmd:CI_Date></gmd:date>
+      </gmd:CI_Citation></gmd:citation>
+      <gmd:abstract><gco:CharacterString>Invented polygons for testing conversions, winding and publication. Not authoritative cadastral data. CRS EPSG:4326; GeoJSON coordinates use longitude, latitude.</gco:CharacterString></gmd:abstract>
+      <gmd:extent><gmd:EX_Extent><gmd:geographicElement><gmd:EX_GeographicBoundingBox>
+        <gmd:westBoundLongitude><gco:Decimal>4.892</gco:Decimal></gmd:westBoundLongitude>
+        <gmd:eastBoundLongitude><gco:Decimal>4.8945</gco:Decimal></gmd:eastBoundLongitude>
+        <gmd:southBoundLatitude><gco:Decimal>52.3728</gco:Decimal></gmd:southBoundLatitude>
+        <gmd:northBoundLatitude><gco:Decimal>52.3744</gco:Decimal></gmd:northBoundLatitude>
+      </gmd:EX_GeographicBoundingBox></gmd:geographicElement></gmd:EX_Extent></gmd:extent>
+    </gmd:MD_DataIdentification>
+  </gmd:identificationInfo>
+  <gmd:dataQualityInfo><gmd:DQ_DataQuality><gmd:lineage><gmd:LI_Lineage>
+    <gmd:statement><gco:CharacterString>PROPOSED WORKFLOW, replace after execution: use ogr2ogr -f GPKG with PROMOTE_TO_MULTI and GEOMETRY_NAME=geom; derive RFC7946=YES GeoJSON and FlatGeobuf; derive MVT/MBTiles z10-16. Convert the separate synthetic DEM with gdal_translate -of COG. Record exact commands, tool versions and actual checks.json. This template is not evidence those conversions ran.</gco:CharacterString></gmd:statement>
+  </gmd:LI_Lineage></gmd:lineage></gmd:DQ_DataQuality></gmd:dataQualityInfo>
+</gmd:MD_Metadata>

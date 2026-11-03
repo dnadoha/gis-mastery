@@ -5,9 +5,9 @@ const {programming,order}=vm.runInNewContext(['course.js','beginner.js','program
 for(const id of order) {
   if(!programming.lessons[id])throw Error(`Missing programming exercise: ${id}`);
   for(const language of Object.keys(programming.languages))for(const solution of [false,true]) {
-    const directory=path.join(root,'exercises',solution?'solutions':'',language);
-    fs.mkdirSync(directory,{recursive:true});
-    fs.writeFileSync(path.join(directory,programming.filename(id,language)),programming.file(id,language,solution));
+    const file=path.join(root,'exercises',solution?'solutions':'',language,programming.filepath(id,language));
+    fs.mkdirSync(path.dirname(file),{recursive:true});
+    fs.writeFileSync(file,programming.file(id,language,solution));
   }
 }
 const readme=`# GIS programming exercises — Python or Go
@@ -18,7 +18,7 @@ One challenge for each chapter of the connected neighbourhood story. Choose eith
 
 1. Install [Python 3.10+](https://www.python.org/downloads/) or [Go 1.18+](https://go.dev/dl/). Check with \`python3 --version\` (on Windows, \`py --version\`) or \`go version\`.
 2. Download a starter below and open it in your editor. A function is a named block of code: it receives the inputs in its parentheses and returns a result. Replace the TODO body with your own implementation.
-3. Open a terminal in the downloaded file's folder. Run \`python3 geometry.py\` (Windows: \`py geometry.py\`) or \`go run geometry.go\`. Substitute the filename for your chapter. Go files are independent programs: run one named file at a time, rather than \`go run .\`.
+3. Open a terminal in the downloaded file's folder. Run \`python3 geometry.py\` (Windows: \`py geometry.py\`) or \`go run geometry.go\`. Substitute the filename for your chapter. In this repository, each Go exercise has its own package directory: from \`exercises/go\`, run \`go run ./geometry\`. Keep separately downloaded Go exercises in separate folders too, so their helpers and \`main\` functions do not collide.
 4. Keep the supplied checks. Each \`check(actual, expected)\` call compares your result to a known answer; a mismatch raises an error. The unimplemented starter intentionally fails. Floating-point comparisons allow an absolute tolerance of 0.000001 or a relative tolerance of 0.000000001, whichever is larger.
 5. When you see \`All checks passed\`, add at least one extra case, run again, then record completion on the website. Use the hints and solutions after attempting the problem.
 
@@ -28,7 +28,7 @@ The [programming workshop](../index.html#practice) saves a separate draft, local
 
 | Chapter | Challenge | Python starter | Go starter | Worked solutions |
 |---|---|---|---|---|
-${order.map((id,i)=>`| ${i+1} | [${programming.lessons[id].title}](../index.html#lesson/${id}/practice) | [${programming.filename(id,'python')}](python/${programming.filename(id,'python')}) | [${programming.filename(id,'go')}](go/${programming.filename(id,'go')}) | [Python](solutions/python/${programming.filename(id,'python')}) · [Go](solutions/go/${programming.filename(id,'go')}) |`).join('\n')}
+${order.map((id,i)=>`| ${i+1} | [${programming.lessons[id].title}](../index.html#lesson/${id}/practice) | [${programming.filename(id,'python')}](python/${programming.filepath(id,'python')}) | [${programming.filename(id,'go')}](go/${programming.filepath(id,'go')}) | [Python](solutions/python/${programming.filepath(id,'python')}) · [Go](solutions/go/${programming.filepath(id,'go')}) |`).join('\n')}
 
 These challenges use explicit input contracts and small teaching datasets. Read each contract before implementing it. The [complete technical note](../core-geospatial-concepts.md) includes the larger Python/QGIS station projects and full mathematical detail.
 
