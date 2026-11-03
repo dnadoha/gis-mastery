@@ -49,7 +49,12 @@ const Beginner = {
           'The required number order is called `axis order`. Some tools expect the opposite order, so read the field names. Swapping the numbers does not swap the labels automatically. We also need agreement about the Earth model behind these coordinates; that is our next step.'
         ]]
       ],
-      figure:['coordinates',1,'Read the labels first and the numbers second. Both lines describe the same School A from the previous chapter.'],
+      figure:['coordinates',-1,'Find School A where the blue latitude line and orange longitude line meet. It is north of the equator and east of the prime meridian. Keep each coordinate’s name attached to its number.'],
+      stepFigures:[
+        ['latitude',0,'Start at the equator, labelled 0°. The blue line through School A is north of it, at latitude 23.8103° N. Latitude is an angle, not a distance in metres.'],
+        ['longitude',1,'Compare the dashed prime meridian at 0° with the solid orange meridian through School A. School A is at longitude 90.4125° E; its latitude is still 23.8103° N.'],
+        ['coordinate-fields',2,'Follow each named field into its matching position in the pair. This example asks for longitude first, so 90.4125 comes before 23.8103.']
+      ],
       takeaway:'Latitude tells north–south position. Longitude tells east–west position. Always keep the names or required order with the numbers.',
       check:['Our input form asks for longitude first. Which School A value goes first?','90.4125 goes first. The full pair is [90.4125, 23.8103].'],
       after:'We have named our school’s coordinates. Next, we will see why everyone must use an agreed reference for Earth.'
@@ -122,6 +127,10 @@ const Beginner = {
         ]]
       ],
       figure:['projection',1,'Both boxes describe School A. The left uses degrees; the right uses the chosen local metre grid. E and N mean easting and northing.'],
+      stepFigures:[
+        ['families',0,'Read each row from left to right: a curved globe, a projection surface, then a flat map. Row a uses a cylinder, b a cone, and c a plane. These are conceptual sketches; real map projections use mathematical rules, not necessarily the light-and-shadow process pictured here.'],
+        ['mercator',0,'The three squares represent equal small patches of ground at different latitudes, drawn at one map scale. In this Mercator example, the patch at 60° has twice the side length and four times the area on the map. The ground has not grown: the projection changes its appearance. These factors use a local spherical approximation.']
+      ],
       takeaway:'Choose a projected CRS that suits the region and measurement. A map’s metre units alone do not guarantee ground accuracy.',
       check:['Which system did we choose for local measurements around our example school?','WGS 84 / UTM 46N, identified by EPSG:32646.'],
       after:'We have chosen a metre grid. Next, we will convert the school coordinates into it without moving the school.'
@@ -445,18 +454,18 @@ const Beginner = {
     let index=this.path.indexOf(id);
     for(const [label,count] of this.groups) { if(index<count)return label; index-=count; }
   },
-  figureInfo(topic) {
-    const [key,,read]=this.lessons[topic.id].figure;
-    const source=key==='heights'||key==='accuracy'?Teaching.figures[key]:null;
-    return {file:source?.file||`journey-${key}.svg`,title:source?.title||this.lessons[topic.id].title,alt:source?.alt||read,read};
+  figureInfo(topic,figure=this.lessons[topic.id].figure) {
+    const [key,,read]=figure;
+    const source=['heights','accuracy','families','mercator'].includes(key)?Teaching.figures[key]:null;
+    return {file:source?.file||`journey-${key}.svg`,title:source?.title||this.lessons[topic.id].title,alt:source?.alt||read,read,notes:source?'assets/figures/CREDITS.md':'assets/figures/CREDITS.md#connected-neighbourhood-story'};
   },
-  figureHTML(topic) {
-    const f=this.figureInfo(topic),url=`assets/figures/${f.file}`;
-    return `<figure class="journey-figure"><a href="${url}" target="_blank" rel="noopener noreferrer" aria-label="Open diagram at full size"><img src="${url}" alt="${this.escape(f.alt)}" loading="lazy" decoding="async"></a><figcaption><strong>Follow the picture.</strong> ${this.inline(f.read)} <a href="${url}" target="_blank" rel="noopener noreferrer">Enlarge ↗</a> <a href="assets/figures/CREDITS.md#connected-neighbourhood-story" target="_blank" rel="noopener noreferrer">Illustration notes ↗</a></figcaption></figure>`;
+  figureHTML(topic,figure=this.lessons[topic.id].figure) {
+    const f=this.figureInfo(topic,figure),url=`assets/figures/${f.file}`;
+    return `<figure class="journey-figure"><a href="${url}" target="_blank" rel="noopener noreferrer" aria-label="Open diagram at full size"><img src="${url}" alt="${this.escape(f.alt)}" loading="lazy" decoding="async"></a><figcaption><strong>Follow the picture.</strong> ${this.inline(f.read)} <a href="${url}" target="_blank" rel="noopener noreferrer">Enlarge ↗</a> <a href="${f.notes}" target="_blank" rel="noopener noreferrer">Illustration notes ↗</a></figcaption></figure>`;
   },
   lessonHTML(topic) {
     const b=this.lessons[topic.id],e=value=>this.inline(value),index=this.path.indexOf(topic.id),previous=this.path[index-1];
-    return `<article id="section-understand" class="lesson-block beginner-guide sequential-reading" tabindex="-1"><div class="reading-context"><span class="eyebrow">CHAPTER ${index+1} OF ${this.path.length} / OUR NEIGHBOURHOOD</span><p><strong>${previous?'Where we left off':'Our starting point'}.</strong> ${e(b.before)}</p>${previous?`<a href="#lesson/${previous}">Revisit: ${this.escape(this.lessons[previous].short)} ←</a>`:''}</div><p class="reading-purpose">${e(b.purpose)}</p>${b.steps.map(([heading,paragraphs],i)=>`<section class="reading-step" id="section-read-${i}" tabindex="-1"><div class="eyebrow">STEP ${i+1} OF ${b.steps.length}</div><h2>${e(heading)}</h2>${paragraphs.map(p=>`<p>${e(p)}</p>`).join('')}${i===b.figure[1]?this.figureHTML(topic):''}</section>`).join('')}${topic.id==='qgis'?'<p><a class="button light" href="data/neighbourhood-school.csv" download>Download our School A CSV ↓</a></p>':''}<div class="beginner-takeaway"><strong>What we can now say</strong><p>${e(b.takeaway)}</p></div><details class="beginner-check"><summary>Pause here: ${e(b.check[0])}</summary><p>${e(b.check[1])}</p></details></article>`;
+    return `<article id="section-understand" class="lesson-block beginner-guide sequential-reading" tabindex="-1"><div class="reading-context"><span class="eyebrow">CHAPTER ${index+1} OF ${this.path.length} / OUR NEIGHBOURHOOD</span><p><strong>${previous?'Where we left off':'Our starting point'}.</strong> ${e(b.before)}</p>${previous?`<a href="#lesson/${previous}">Revisit: ${this.escape(this.lessons[previous].short)} ←</a>`:''}</div><p class="reading-purpose">${e(b.purpose)}</p>${b.figure[1]===-1?this.figureHTML(topic):''}${b.steps.map(([heading,paragraphs],i)=>`<section class="reading-step" id="section-read-${i}" tabindex="-1"><div class="eyebrow">STEP ${i+1} OF ${b.steps.length}</div><h2>${e(heading)}</h2>${paragraphs.map(p=>`<p>${e(p)}</p>`).join('')}${(b.stepFigures||[]).filter(figure=>figure[1]===i).map(figure=>this.figureHTML(topic,figure)).join('')}${i===b.figure[1]?this.figureHTML(topic):''}</section>`).join('')}${topic.id==='qgis'?'<p><a class="button light" href="data/neighbourhood-school.csv" download>Download our School A CSV ↓</a></p>':''}<div class="beginner-takeaway"><strong>What we can now say</strong><p>${e(b.takeaway)}</p></div><details class="beginner-check"><summary>Pause here: ${e(b.check[0])}</summary><p>${e(b.check[1])}</p></details></article>`;
   },
   transitionHTML(topic) {
     const index=this.path.indexOf(topic.id),next=this.path[index+1],previous=this.path[index-1];

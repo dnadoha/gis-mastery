@@ -100,6 +100,44 @@ test('the connected story has independently checkable distances, projection and 
   assert.ok(topics.findIndex(t=>t.id==='topology')<topics.findIndex(t=>t.id==='coverage'));
 });
 
+test('each coordinate lesson step has its own generated instructional image',()=>{
+  const beginner=vm.runInContext('Beginner',context),topic=topics.find(t=>t.id==='axes');
+  const html=beginner.lessonHTML(topic),guide=fs.readFileSync(path.join(root,'beginner-geospatial-guide.md'),'utf8');
+  const steps=[...html.matchAll(/<section class="reading-step"[^>]*>([\s\S]*?)<\/section>/g)];
+  assert.equal(steps.length,3);
+  assert.equal((html.match(/<figure /g)||[]).length,4,'Keep the overview globe as well as the three step images');
+  ['latitude','longitude','coordinate-fields'].forEach((kind,i)=>{
+    const file=`assets/figures/journey-${kind}.svg`,figure=beginner.lessons.axes.stepFigures[i];
+    assert.equal((steps[i][1].match(/<figure /g)||[]).length,1);
+    assert.ok(steps[i][1].includes(`src="${file}"`));
+    assert.ok(steps[i][1].includes(beginner.escape(figure[2])),'The reading guide is also the image alternative text');
+    const svg=fs.readFileSync(path.join(root,file),'utf8').trim();
+    assert.equal(svg,context.neighbourhood.diagram(kind));
+    assert.ok(!/NaN|undefined/.test(svg));
+    const heading=`### ${i+1}. ${beginner.lessons.axes.steps[i][0]}`,start=guide.indexOf(heading),end=guide.indexOf('### ',start+heading.length);
+    assert.ok(guide.slice(start,end===-1?undefined:end).includes(`](${file})`));
+  });
+});
+
+test('the flattening step contains both existing projection visuals with reading guides',()=>{
+  const beginner=vm.runInContext('Beginner',context),topic=topics.find(t=>t.id==='projections');
+  const html=beginner.lessonHTML(topic),steps=[...html.matchAll(/<section class="reading-step"[^>]*>([\s\S]*?)<\/section>/g)];
+  assert.equal((steps[0][1].match(/<figure /g)||[]).length,2);
+  assert.equal((steps[1][1].match(/<figure /g)||[]).length,1,'Keep the local-grid illustration in step 2');
+  assert.equal((steps[2][1].match(/<figure /g)||[]).length,0);
+  const guide=fs.readFileSync(path.join(root,'beginner-geospatial-guide.md'),'utf8');
+  const start=guide.indexOf('### 1. Understand why flattening needs a rule'),end=guide.indexOf('### 2. Choose for this neighbourhood',start);
+  for(const [i,file] of ['qgis-projection_families.png','study-mercator.svg'].entries()) {
+    assert.ok(fs.existsSync(path.join(root,'assets/figures',file)));
+    assert.ok(steps[0][1].includes(`src="assets/figures/${file}"`));
+    assert.ok(steps[0][1].includes(beginner.lessons.projections.stepFigures[i][2]));
+    assert.ok(guide.slice(start,end).includes(`](assets/figures/${file})`));
+  }
+  assert.ok(steps[0][1].includes('href="assets/figures/CREDITS.md"'));
+  assert.ok(steps[0][1].includes('conceptual sketches'));
+  assert.ok(steps[0][1].includes('local spherical approximation'));
+});
+
 test('WGS 84 curvature and spherical distortion match source tables',()=>{
   near(geo.degreeLengths(0).lat,110574.3,.1);
   near(geo.degreeLengths(0).lon,111319.5,.1);

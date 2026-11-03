@@ -31,8 +31,19 @@ ${topics.map((t,i)=>`${i+1}. [${t.title}](#topic-${t.id})`).join('\n')}
 `;
 const body=topics.map((topic,index)=>{
   const b=beginner.lessons[topic.id],f=beginner.figureInfo(topic),previous=topics[index-1],next=topics[index+1];
-  if(f.file.startsWith('journey-')) fs.writeFileSync(path.join(root,'assets/figures',f.file),scene.diagram(b.figure[0])+'\n');
-  const steps=b.steps.map(([heading,paragraphs],i)=>`### ${i+1}. ${heading}\n\n${paragraphs.join('\n\n')}${i===b.figure[1]?`\n\n![${f.alt}](assets/figures/${f.file})\n\n**Follow the picture:** ${f.read}\n\n*[Original project illustration and calculation notes](assets/figures/CREDITS.md#connected-neighbourhood-story).*`:''}`).join('\n\n');
+  for(const figure of [b.figure,...(b.stepFigures||[])]) {
+    const info=beginner.figureInfo(topic,figure);
+    if(info.file.startsWith('journey-')) fs.writeFileSync(path.join(root,'assets/figures',info.file),scene.diagram(figure[0])+'\n');
+  }
+  const steps=b.steps.map(([heading,paragraphs],i)=>{
+    const figures=(b.stepFigures||[]).filter(figure=>figure[1]===i);
+    if(i===b.figure[1]) figures.push(b.figure);
+    return `### ${i+1}. ${heading}\n\n${paragraphs.join('\n\n')}${figures.map(figure=>{
+      const info=beginner.figureInfo(topic,figure);
+      const credit=info.file.startsWith('journey-')?'Original project illustration and calculation notes':'Illustration credits and calculation notes';
+      return `\n\n![${info.alt}](assets/figures/${info.file})\n\n**Follow the picture:** ${info.read}\n\n*[${credit}](${info.notes}).*`;
+    }).join('')}`;
+  }).join('\n\n');
   return `
 <a id="topic-${topic.id}"></a>
 
@@ -42,7 +53,7 @@ const body=topics.map((topic,index)=>{
 
 **Why this step matters:** ${b.purpose}
 
-${steps}
+${b.figure[1]===-1?`![${f.alt}](assets/figures/${f.file})\n\n**Follow the picture:** ${f.read}\n\n*[Original project illustration and calculation notes](assets/figures/CREDITS.md#connected-neighbourhood-story).*\n\n`:''}${steps}
 
 ${topic.id==='qgis'?'[Download our School A CSV](data/neighbourhood-school.csv). The documented source CRS is `EPSG:4326`; `lon` is longitude and `lat` is latitude.\n\n':''}**What we can now say:** ${b.takeaway}
 

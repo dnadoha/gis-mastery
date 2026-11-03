@@ -1,6 +1,6 @@
 # Fieldnotes — the geospatial field guide
 
-A static HTML/CSS/JavaScript learning website with two course phases. Phase 1 follows a connected beginner story with the complete technical reading from `core-geospatial-concepts.md`. Phase 2 follows the Amsterdam publishing project in `gis-note-phase2.md`. All generated pages, equations, diagrams and font assets are included for offline use.
+A static HTML/CSS/JavaScript learning website with three course phases. Phase 1 follows a connected beginner story with the complete technical reading from `core-geospatial-concepts.md`. Phase 2 follows the Amsterdam publishing project in `gis-note-phase2.md`. Phase 3 automates a synthetic flood study from `gis-note-phase3.md`. All generated pages, equations, diagrams and font assets are included for offline use.
 
 ## Open it
 
@@ -35,6 +35,24 @@ python exercises/phase2/test_helpers.py
 ```
 
 Use the Chromium configuration described below. Commit generated `phase2-data.js`, `PHASE2-COVERAGE.md`, six `assets/figures/phase2-*.svg` files and generated exercise/source downloads. Vercel serves these files without installing dependencies or launching a browser. Python helper tests do not claim GDAL/PMTiles conversions ran: validate actual releases with those tools locally.
+
+## Phase 3 — Programmatic GIS
+
+Open **index.html#phase3** after Phases 1–2. Ten connected chapters cover GDAL/OGR, PROJ, GEOS, CRS discipline, vector operations, raster processing, the complete flood-exposure example, geocoding, routing, large-data strategies, JavaScript counterparts and the clinic-access capstone. Four progressive exercises reuse one synthetic UTM study area; Python, optional SQL and HTTP examples run in your own tools, not the browser.
+
+- `phase3-course.js`: guided chapters, explicit source mappings, checks and separate source clarifications.
+- `phase3-data.js`: generated full-source reader — **53 of 53 sections**, 23 tables, 33 code/text blocks, four equations and five offline Mermaid diagrams. ASCII schematics remain complete preformatted text. [PHASE3-COVERAGE.md](PHASE3-COVERAGE.md) records exact mappings and the LF-canonical source hash.
+- `phase3.js`: learning path, chapters, full-text source search, four-task workshop, saved evidence, read status and notebook integration. Earlier URLs and browser records are preserved; Phase 3 progress is separate.
+- `exercises/phase3/`: all four original tasks and complete solutions, downloadable Python modules, optional pgRouting SQL, the worked example and JavaScript listings. [Setup and source limitations](exercises/phase3/README.md) explain how to run them locally. Solution files preserve the supplied code; they are not starters or execution evidence.
+
+The original note is unchanged. Clarifications flag the `pyproj.transformer.TransformerGroup` import, buffer defaults, projected versus metre units, validity masks, tile ownership and positive-length road closures. Opening solutions never awards completion; editing exercise evidence clears completion. All three phases are included in notebook export and the explicitly confirmed reset.
+
+```bash
+npm run build:phase3
+node --test tests/phase3.test.cjs
+```
+
+Set `PUPPETEER_EXECUTABLE_PATH` to an installed Chromium browser if necessary (for example `C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe` on Windows). Commit generated `phase3-data.js`, `PHASE3-COVERAGE.md`, five `assets/figures/phase3-*.svg` files and the generated exercise/source downloads. No new npm dependencies or server-side deployment build are needed. Content/browser checks do not claim native GIS, live geocoding/routing or pgRouting execution.
 
 ## Explore Phase 1
 

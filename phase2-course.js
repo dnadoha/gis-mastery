@@ -167,7 +167,7 @@ const Phase2Course = {
       ],
       takeaway:'A release is data plus provenance plus evidence; every unverified claim remains a limitation.',
       check:['May a report call the package fully verified after checking only dem.asc?','No. It must check the released raster, or explicitly state that the COG is unverified.'],
-      after:'You have completed Phase 2’s path. Repeat the workflow with a real open dataset before moving on to spatial databases and PostGIS.'
+      after:'You have completed Phase 2’s path. Repeat the workflow with a real open dataset, then continue to Phase 3 to automate checked spatial processing.'
     }
   ],
   exercises:[

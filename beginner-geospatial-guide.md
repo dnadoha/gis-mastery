@@ -98,11 +98,23 @@ No. The name is an attribute. Its position can stay the same.
 
 **Why this step matters:** We will describe the same school with two numbers, and keep their names attached so we cannot mix them up.
 
+![Find School A where the blue latitude line and orange longitude line meet. It is north of the equator and east of the prime meridian. Keep each coordinate’s name attached to its number.](assets/figures/journey-coordinates.svg)
+
+**Follow the picture:** Find School A where the blue latitude line and orange longitude line meet. It is north of the equator and east of the prime meridian. Keep each coordinate’s name attached to its number.
+
+*[Original project illustration and calculation notes](assets/figures/CREDITS.md#connected-neighbourhood-story).*
+
 ### 1. Begin with north and south
 
 Picture a globe. The `equator` is the imaginary line around its middle, halfway between the North and South Poles. `Latitude` describes a place’s north–south position relative to that line.
 
 Latitude is an angle, written in `degrees`. The symbol `°` means degrees; it does not mean metres. The equator is `0°`, and the North Pole is `90° N`.
+
+![Start at the equator, labelled 0°. The blue line through School A is north of it, at latitude 23.8103° N. Latitude is an angle, not a distance in metres.](assets/figures/journey-latitude.svg)
+
+**Follow the picture:** Start at the equator, labelled 0°. The blue line through School A is north of it, at latitude 23.8103° N. Latitude is an angle, not a distance in metres.
+
+*[Original project illustration and calculation notes](assets/figures/CREDITS.md#connected-neighbourhood-story).*
 
 ### 2. Add east and west
 
@@ -110,9 +122,9 @@ Latitude is an angle, written in `degrees`. The symbol `°` means degrees; it do
 
 For our invented School A, use an example position near Dhaka: longitude `90.4125° E`, latitude `23.8103° N`. Here `E` means east and `N` means north. Together these numbers are its `coordinates`: numbers describing a position.
 
-![Read the labels first and the numbers second. Both lines describe the same School A from the previous chapter.](assets/figures/journey-coordinates.svg)
+![Compare the dashed prime meridian at 0° with the solid orange meridian through School A. School A is at longitude 90.4125° E; its latitude is still 23.8103° N.](assets/figures/journey-longitude.svg)
 
-**Follow the picture:** Read the labels first and the numbers second. Both lines describe the same School A from the previous chapter.
+**Follow the picture:** Compare the dashed prime meridian at 0° with the solid orange meridian through School A. School A is at longitude 90.4125° E; its latitude is still 23.8103° N.
 
 *[Original project illustration and calculation notes](assets/figures/CREDITS.md#connected-neighbourhood-story).*
 
@@ -121,6 +133,12 @@ For our invented School A, use an example position near Dhaka: longitude `90.412
 Write the names beside the numbers: `longitude = 90.4125` and `latitude = 23.8103`. If a tool asks for longitude first, the pair is `[90.4125, 23.8103]`.
 
 The required number order is called `axis order`. Some tools expect the opposite order, so read the field names. Swapping the numbers does not swap the labels automatically. We also need agreement about the Earth model behind these coordinates; that is our next step.
+
+![Follow each named field into its matching position in the pair. This example asks for longitude first, so 90.4125 comes before 23.8103.](assets/figures/journey-coordinate-fields.svg)
+
+**Follow the picture:** Follow each named field into its matching position in the pair. This example asks for longitude first, so 90.4125 comes before 23.8103.
+
+*[Original project illustration and calculation notes](assets/figures/CREDITS.md#connected-neighbourhood-story).*
 
 **What we can now say:** Latitude tells north–south position. Longitude tells east–west position. Always keep the names or required order with the numbers.
 
@@ -173,7 +191,7 @@ The `geoid` is a gravity-based reference surface close to average sea level. It 
 
 **Follow the picture:** Use the marked terrain point as our roof example. Trace each arrow down to its starting surface before comparing 50 m and 30 m. The surface separation is exaggerated.
 
-*[Original project illustration and calculation notes](assets/figures/CREDITS.md#connected-neighbourhood-story).*
+*[Illustration credits and calculation notes](assets/figures/CREDITS.md).*
 
 **What we can now say:** A reference tells us what our position or height is measured from. Check that reference before comparing datasets.
 
@@ -262,6 +280,18 @@ No. Its geographic coordinates use degrees. We will choose a suitable metre-base
 A globe is curved, but our screen is flat. A `map projection` is the calculation that places locations from the curved surface onto a flat map.
 
 Flattening changes some shapes, sizes or distances. Those changes are called `distortion`. No flat world map preserves all of them everywhere.
+
+![QGIS diagrams showing cylindrical, conical and planar projection surfaces around a globe.](assets/figures/qgis-projection_families.png)
+
+**Follow the picture:** Read each row from left to right: a curved globe, a projection surface, then a flat map. Row a uses a cylinder, b a cone, and c a plane. These are conceptual sketches; real map projections use mathematical rules, not necessarily the light-and-shadow process pictured here.
+
+*[Illustration credits and calculation notes](assets/figures/CREDITS.md).*
+
+![Equal local ground squares at 0°, 30° and 60° latitude are drawn at one map scale; at 60°, length doubles and area quadruples in the spherical approximation.](assets/figures/study-mercator.svg)
+
+**Follow the picture:** The three squares represent equal small patches of ground at different latitudes, drawn at one map scale. In this Mercator example, the patch at 60° has twice the side length and four times the area on the map. The ground has not grown: the projection changes its appearance. These factors use a local spherical approximation.
+
+*[Illustration credits and calculation notes](assets/figures/CREDITS.md).*
 
 ### 2. Choose for this neighbourhood
 
@@ -432,7 +462,7 @@ A consistent shift is called `bias`. In the picture, each cross stands for the k
 
 **Follow the picture:** Imagine the same school entrance at the centre of each target. Across a row, the group shifts; down a column, the readings spread out.
 
-*[Original project illustration and calculation notes](assets/figures/CREDITS.md#connected-neighbourhood-story).*
+*[Illustration credits and calculation notes](assets/figures/CREDITS.md).*
 
 ### 3. Carry that uncertainty into our result
 

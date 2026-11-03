@@ -1,6 +1,6 @@
 const App = {
   storageKey: 'gis-fieldnotes-v1',
-  state: { checks: {}, coding: {}, tasks: {}, notes: {}, phase2: {}, lastTopic: 'geometry' },
+  state: { checks: {}, coding: {}, tasks: {}, notes: {}, phase2: {}, phase3: {}, lastTopic: 'geometry' },
   storageAvailable: true,
   activePage: '',
   filter: 'All topics',
@@ -11,7 +11,7 @@ const App = {
     try {
       const saved = JSON.parse(localStorage.getItem(this.storageKey) || 'null');
       if (saved && typeof saved === 'object') {
-        for (const key of ['checks','coding','tasks','notes','phase2']) if (saved[key] && typeof saved[key] === 'object' && !Array.isArray(saved[key])) this.state[key] = saved[key];
+        for (const key of ['checks','coding','tasks','notes','phase2','phase3']) if (saved[key] && typeof saved[key] === 'object' && !Array.isArray(saved[key])) this.state[key] = saved[key];
         if (TOPICS.some(t => t.id === saved.lastTopic)) this.state.lastTopic = saved.lastTopic;
       }
       localStorage.setItem(this.storageKey, JSON.stringify(this.state));
@@ -68,10 +68,12 @@ const App = {
       let label = '';
       if (group !== Beginner.group(t.id)) { group = Beginner.group(t.id); label = `<div class="nav-group">${group}</div>`; }
       return `${label}<a href="#lesson/${t.id}" data-topic="${t.id}"><span class="nav-num">${String(i+1).padStart(2,'0')}</span>${t.short}${Coding.completed(t.id)?'<span class="nav-check" aria-label="Programming exercise completed (self-reported)">✓</span>':''}</a>`;
-    }).join('')+Phase2.navHTML();
-    document.getElementById('total-progress').textContent = location.hash.startsWith('#phase2')?`${Phase2.completed()} / 5 Phase 2 exercises`:`${this.totals().coding} / ${Coding.count()} Phase 1 programs`;
+    }).join('')+Phase2.navHTML()+Phase3.navHTML();
+    document.getElementById('total-progress').textContent = location.hash.startsWith('#phase3')?`${Phase3.completed()} / 4 Phase 3 exercises`:location.hash.startsWith('#phase2')?`${Phase2.completed()} / 5 Phase 2 exercises`:`${this.totals().coding} / ${Coding.count()} Phase 1 programs`;
     const phase2Id=location.hash.split('/')[2];
     document.querySelectorAll('[data-phase2-topic]').forEach(a=>{const active=location.hash.startsWith('#phase2/lesson/')&&a.dataset.phase2Topic===phase2Id;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+    const phase3Id=location.hash.split('/')[2];
+    document.querySelectorAll('[data-phase3-topic]').forEach(a=>{const active=location.hash.startsWith('#phase3/lesson/')&&a.dataset.phase3Topic===phase3Id;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
     const lessonId = location.hash.split('/')[1];
     document.querySelectorAll('[data-topic]').forEach(a => { const active = a.dataset.topic===lessonId; a.classList.toggle('active',active); if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current'); });
     const page = (location.hash.slice(1).split('/')[0] || 'home');
@@ -82,8 +84,8 @@ const App = {
     let page = parts[0] || 'home';
     const topic = TOPICS.find(t => t.id === parts[1]);
     if (page==='lesson' && !topic) page='missing';
-    if (!['home','lesson','practice','notebook','resources','reference','phase2','missing'].includes(page)) page='missing';
-    const key = page==='phase2'?parts.join('/'):page==='lesson'?`lesson/${topic.id}`:page==='reference'?`reference/${parts[1]||''}`:page;
+    if (!['home','lesson','practice','notebook','resources','reference','phase2','phase3','missing'].includes(page)) page='missing';
+    const key = page==='phase2'||page==='phase3'?parts.join('/'):page==='lesson'?`lesson/${topic.id}`:page==='reference'?`reference/${parts[1]||''}`:page;
     if (this.activePage!==key || page==='notebook') {
       this.activePage=key;
       const main=document.getElementById('main');
@@ -94,13 +96,14 @@ const App = {
       if(page==='resources') this.resources(main);
       if(page==='reference') Reference.render(main,parts[1]);
       if(page==='phase2') Phase2.render(main,parts.slice(1));
+      if(page==='phase3') Phase3.render(main,parts.slice(1));
       if(page==='missing') main.innerHTML='<div class="empty-state"><h1>That trail isn’t on the map.</h1><p>Choose a topic from the sidebar or return to the learning path.</p><a class="button primary" href="#home">Back to the learning path</a></div>';
       if(!this.storageAvailable) main.insertAdjacentHTML('afterbegin','<div class="storage-warning">Browser storage is unavailable. Progress works for this session; export your notebook before closing the page.</div>');
       window.scrollTo(0,0);
       if(moveFocus) main.focus({preventScroll:true});
     }
     this.updateNav();
-    const title = topic && page==='lesson'?topic.short:page==='phase2'?`Phase 2 · ${parts[1]==='lesson'?(Phase2.lesson(parts[2])?.short||'Not found'):parts[1]==='reference'?'Complete note':parts[1]==='exercises'?'Publishing workshop':'Formats & standards'}`:{home:'Phase 1 · Foundations',practice:'Phase 1 · Coding exercises',notebook:'My field notebook',resources:'Reference shelf',reference:'Phase 1 · Complete note',missing:'Not found'}[page];
+    const title = topic && page==='lesson'?topic.short:page==='phase3'?`Phase 3 · ${parts[1]==='lesson'?(Phase3.lesson(parts[2])?.short||'Not found'):parts[1]==='reference'?'Complete note':parts[1]==='exercises'?'Geoprocessing workshop':'Programmatic GIS'}`:page==='phase2'?`Phase 2 · ${parts[1]==='lesson'?(Phase2.lesson(parts[2])?.short||'Not found'):parts[1]==='reference'?'Complete note':parts[1]==='exercises'?'Publishing workshop':'Formats & standards'}`:{home:'Phase 1 · Foundations',practice:'Phase 1 · Coding exercises',notebook:'My field notebook',resources:'Reference shelf',reference:'Phase 1 · Complete note',missing:'Not found'}[page];
     document.getElementById('breadcrumb').textContent=title;
     document.title=`${title} — Fieldnotes`;
     if(page==='lesson' && parts[2]) {
@@ -111,8 +114,8 @@ const App = {
         section.scrollIntoView({behavior:'instant',block:'start'});
         if(moveFocus)section.focus({preventScroll:true});
       }
-    } else if(page==='phase2'&&parts[3]) {
-      const section=document.getElementById(`phase2-${parts[3]}`);
+    } else if((page==='phase2'||page==='phase3')&&parts[3]) {
+      const section=document.getElementById(`${page}-${parts[3]}`);
       if(section){for(let node=section;node;node=node.parentElement)if(node.tagName==='DETAILS')node.open=true;section.scrollIntoView({block:'start'});if(moveFocus)section.focus({preventScroll:true});}
     } else if(moveFocus) {
       window.scrollTo(0,0);
@@ -125,6 +128,7 @@ const App = {
       <section class="lesson-block first-map" aria-labelledby="first-map-title"><div class="eyebrow">THE THREAD WE WILL FOLLOW</div><h2 id="first-map-title">Each step answers a question raised by the last.</h2><ol class="story-path"><li><b>Draw the places.</b> What should a school or road look like in our data?</li><li><b>Locate them.</b> How do numbers put each object in the right place?</li><li><b>Measure carefully.</b> What does “near a school” mean?</li><li><b>Add the people.</b> Which population cells meet our distance rule?</li><li><b>Count once.</b> What if one cell is near both schools?</li><li><b>Explain and share.</b> How can someone else understand and check the answer?</li></ol><p>Begin at chapter 1 and follow the Next links. New terms are explained inside the sentence where they first become useful. Each chapter tells you what we already know and why we need the next step.</p></section>
       <section aria-labelledby="path-title"><div class="section-heading"><div><h2 id="path-title">Read these chapters in order</h2><p>The sidebar, chapter numbers and Next links all follow this sequence.</p></div><div class="course-tools"><input id="topic-search" type="search" placeholder="Find a chapter…" aria-label="Search topics" value="${this.escape(this.search)}"></div></div><details class="path-filters"><summary>Find a topic to revisit</summary><div class="filter-chips" id="topic-filters">${['All topics','Locate','Analyse','Represent','Communicate','Integrate'].map(f=>`<button type="button" data-filter="${f}" class="${this.filter===f?'active':''}" aria-pressed="${this.filter===f}">${f}</button>`).join('')}</div></details><div id="course-grid" class="course-grid"></div><p id="topic-count" class="muted" role="status" style="font-size:11px;margin-top:12px"></p></section>
       <div class="learning-tip"><span class="stat-icon" aria-hidden="true">✦</span><div><strong>Keep one question in mind: how many people live near a school?</strong><p>Follow the chapter links to build the answer step by step. Each picture and pause question helps you connect the new idea to the neighbourhood you already know.</p></div></div>`;
+    main.insertAdjacentHTML('beforeend','<section class="phase-switch" aria-label="Continue to programmatic GIS"><span><strong>Phase 3:</strong> automate a checked flood-exposure and clinic-access study.</span><a class="button light" href="#phase3">Programmatic GIS →</a></section>');
     this.cards();
     main.querySelector('#topic-search').addEventListener('input',event=>{this.search=event.target.value;this.cards();});
     main.querySelector('#topic-filters').addEventListener('click',event=>{const button=event.target.closest('[data-filter]');if(!button)return;this.filter=button.dataset.filter;main.querySelectorAll('[data-filter]').forEach(b=>{const active=b.dataset.filter===this.filter;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});this.cards();});
@@ -189,10 +193,11 @@ const App = {
     main.innerHTML=`<header class="lesson-header"><div class="eyebrow">THE THINGS THAT STUCK</div><h1>Your field notebook.</h1><p>Your explanations, programming drafts and completed field tasks. Saved locally, never sent to a server.</p></header><div class="progress-summary"><h2>${totals.coding} / ${Coding.count()} programming exercises completed</h2><p>${totals.tasks} / ${taskCount} field tasks self-assessed.</p><div class="thin-progress"><span style="width:${totals.coding/Coding.count()*100}%"></span></div><small>Completion is self-reported after running the code locally. Finishing either language counts once per chapter. Editing a saved file clears that language’s completion until you re-run its checks.</small></div><div class="toolbar"><button id="export-notes" class="primary">Export notebook (.md) ↓</button><button id="print-notes">Print notebook</button><button id="reset-progress">Reset local progress</button></div><div class="notebook-grid">${TOPICS.map(t=>`<article class="notebook-card"><div class="eyebrow">${Beginner.group(t.id)}</div><h3><a href="#lesson/${t.id}">${t.title} ↗</a></h3><small class="muted">${Coding.completed(t.id)?'Program completed (self-reported)':'Program not yet completed'} · ${t.tasks.filter((_,i)=>this.state.tasks[`${t.id}-${i}`]).length}/${t.tasks.length} field tasks</small><p style="margin-top:14px">${this.escape(this.state.notes[t.id]||'No field notes yet. Use the link below to add your own explanation of this chapter.')}</p><p><a href="#lesson/${t.id}/practice">Open code & saved drafts →</a></p><a class="text-link" href="#lesson/${t.id}/notes">${this.state.notes[t.id]?'Edit notes':'Write a field note'} →</a></article>`).join('')}</div>`;
     main.querySelector('#export-notes').addEventListener('click',()=>this.exportNotes());
     main.insertAdjacentHTML('beforeend',Phase2.notebookHTML());
+    main.insertAdjacentHTML('beforeend',Phase3.notebookHTML());
     main.querySelector('#print-notes').addEventListener('click',()=>window.print());
     main.querySelector('#reset-progress').addEventListener('click',()=>{
       if(!confirm('Reset all saved code drafts, progress, field tasks and notes for this site? Export your notebook first if you want to keep it.'))return;
-      this.state={checks:{},coding:{},tasks:{},notes:{},phase2:{},lastTopic:'geometry'};this.save();this.notebook(main);this.updateNav();this.toast('Local progress and notes reset.');
+      this.state={checks:{},coding:{},tasks:{},notes:{},phase2:{},phase3:{},lastTopic:'geometry'};this.save();this.notebook(main);this.updateNav();this.toast('Local progress and notes reset.');
     });
   },
   download(name,content,type='text/plain;charset=utf-8') {
@@ -209,7 +214,7 @@ const App = {
       }).join('\n');
       return `## ${t.title}\n\nSource sections: ${t.reference}.\n\n${this.state.notes[t.id]||'_No notes yet._'}\n\n### Programming exercise: ${Programming.lessons[t.id].title}\n\n${drafts||'_No saved code yet._'}\n\n### Field tasks\n${t.tasks.map((task,i)=>`- [${this.state.tasks[`${t.id}-${i}`]?'x':' '}] ${task.title}`).join('\n')}\n`;
     }).join('\n')+(Object.keys(this.state.checks).length?`\n## Archived quiz records\n\nThese prior records do not count toward programming completion.\n\n\`\`\`json\n${JSON.stringify(this.state.checks,null,2)}\n\`\`\`\n`:'');
-    this.download('my-gis-fieldnotes.md',content+Phase2.exportNotes(),'text/markdown;charset=utf-8');
+    this.download('my-gis-fieldnotes.md',content+Phase2.exportNotes()+Phase3.exportNotes(),'text/markdown;charset=utf-8');
   },
   resources(main) {
     // The shared shelf links to Phase 2 without replacing Phase 1 downloads.
@@ -222,6 +227,7 @@ const App = {
       <details class="lesson-block optional-learning"><summary>Later: official documentation & technical references</summary><div class="resource-links">${[['EPSG registry','https://epsg.org/'],['PROJ','https://proj.org/'],['GDAL','https://gdal.org/'],['pyproj','https://pyproj4.github.io/pyproj/'],['Shapely','https://shapely.readthedocs.io/'],['GeoPandas','https://geopandas.org/'],['PostGIS','https://postgis.net/docs/'],['QGIS training','https://docs.qgis.org/latest/en/docs/training_manual/'],['GeoJSON RFC 7946','https://www.rfc-editor.org/rfc/rfc7946'],['GeoPackage','https://www.geopackage.org/'],['ColorBrewer','https://colorbrewer2.org/'],['USGS projection manual','https://pubs.usgs.gov/publication/pp1395']].map(([name,url])=>`<a href="${url}" target="_blank" rel="noopener noreferrer">${name} ↗</a>`).join('')}</div></details>`;
     main.insertAdjacentHTML('beforeend',`<section class="lesson-block"><h2>Every detail of the original note</h2><p>The complete reader includes all ${ReferenceData.counts.sections} source sections, formulas, tables, code listings, exercises, solutions and Appendix A. Each section is also available under Full source detail in the relevant chapter.</p><div class="resource-links"><a href="#reference">Explore the coverage index →</a><a href="#reference/overview">Read the full note in order →</a><a href="SOURCE-COVERAGE.md" download>Download coverage index ↓</a><a href="data/geolib.py" download>Download geolib.py ↓</a></div></section>`+Teaching.creditsHTML());
     main.insertAdjacentHTML('afterbegin','<section class="lesson-block"><h2>Phase 2 — Data formats and standards</h2><p>Continue with the Amsterdam publishing project, complete source note, five progressive exercises and corrected local helpers.</p><div class="resource-links"><a href="#phase2">Start Phase 2 →</a><a href="#phase2/reference">Complete Phase 2 note →</a><a href="exercises/phase2/README.md">Phase 2 files and setup →</a></div></section>');
+    main.insertAdjacentHTML('beforeend','<section class="lesson-block"><h2>Phase 3 — Programmatic GIS</h2><p>Automate a synthetic flood study with GDAL, PROJ, GEOS, Python and JavaScript. Ten connected chapters, the complete source note and four progressive exercises.</p><div class="resource-links"><a href="#phase3">Start Phase 3 →</a><a href="#phase3/reference">Complete Phase 3 note →</a><a href="gis-note-phase3.md" download>Download original note ↓</a><a href="exercises/phase3/README.md">Phase 3 files and setup →</a></div></section>');
   }
 };
 

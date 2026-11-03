@@ -304,6 +304,74 @@ async function navigate(url) { const loaded=once('Page.loadEventFired');await se
   fs.writeFileSync(path.join(artifacts,'phase2-exercise-mobile.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
   await route('#phase2/lesson/not-a-chapter');
   check('Unknown Phase 2 chapter has a recovery link',await evaluate('document.querySelector("main a").hash==="#phase2"'));
+  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await route('#phase3');
+  check('Phase 3 offers ten chapters with independent progress and preserves earlier work',await evaluate('document.querySelectorAll(".phase3-card").length===10 && document.querySelectorAll("[data-phase3-topic]").length===10 && document.querySelectorAll("[data-phase2-topic]").length===12 && document.querySelectorAll("[data-topic]").length===18 && Phase3.completed()===0 && Phase2.record("contracts").read && App.totals().coding===1'));
+  fs.writeFileSync(path.join(artifacts,'phase3-home-desktop.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+  const phase3IDs=await evaluate('Phase3Course.lessons.map(l=>l.id)');
+  for(const id of phase3IDs){
+    await route(`#phase3/lesson/${id}`);
+    await evaluate('Promise.all([...document.querySelectorAll(".journey-figure img")].map(img=>{img.loading="eager";return img.decode();}))');
+    check(`Phase 3 ${id}: connected chapter, original source, image and navigation`,await evaluate('document.querySelectorAll(".reading-step").length===3 && document.querySelectorAll(".lesson-pagination a").length===2 && document.querySelectorAll("[data-phase3-topic][aria-current=page]").length===1 && document.querySelector("#phase3-source")!==null && [...document.querySelectorAll(".journey-figure img")].every(img=>img.naturalWidth>0)'));
+  }
+  await route('#phase3/lesson/stack');
+  await evaluate('document.querySelector(".chapter-transition .primary").click();new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+  check('Phase 3 Next follows chapter order',await evaluate('location.hash==="#phase3/lesson/crs"'));
+  await route('#phase3/lesson/crs/source-4-2');
+  check('Phase 3 source deep link opens ancestors and displays separate import clarification',await evaluate('document.querySelector("#phase3-source").open && document.querySelector("#phase3-source-4-2").open && document.querySelector("#phase3-source-4-2 .source-clarification").textContent.includes("pyproj.transformer")'));
+  await route('#phase3/lesson/crs/notes');
+  await evaluate('document.querySelector("#phase3-note").value="Phase 3 <script>literal</script> note";document.querySelector("#phase3-note").dispatchEvent(new Event("input"));document.querySelector("[data-phase3-read]").click()');
+  await route('#phase3/exercises/2');
+  check('Phase 3 exercise retains task and closed complete solution',await evaluate('document.querySelectorAll(".phase3-exercise").length===1 && !document.querySelector(".coding-solution").open && document.querySelector("[data-phase3-source=exercise-2]").textContent.includes("Success criteria")'));
+  await evaluate('document.querySelector(".coding-solution summary").click()');
+  check('Phase 3 solution viewing awards no completion',await evaluate('Phase3.completed()===0 && !document.querySelector("[data-phase3-complete]").checked'));
+  await evaluate('const note=document.querySelector("[data-phase3-note]");note.value="Flood evidence ``` <script>not code</script>";note.dispatchEvent(new Event("input"));document.querySelector("[data-phase3-complete]").click()');
+  check('Phase 3 completion updates live and remains isolated from earlier phases',await evaluate('Phase3.completed()===1 && Phase2.completed()===0 && App.totals().coding===1 && document.querySelector("#total-progress").textContent.includes("1 / 4") && document.querySelector("[data-phase3-progress]").textContent.startsWith("1 / 4")'));
+  const phase3Reloaded=once('Page.loadEventFired');await send('Page.reload');await phase3Reloaded;
+  check('Phase 3 notes, read status and evidence completion survive reload safely',await evaluate('Phase3.record("crs").read && Phase3.record("crs").notes.includes("<script>") && document.querySelector("[data-phase3-complete]").checked && document.querySelector("[data-phase3-note]").value.includes("Flood evidence") && !document.querySelector(".phase3-exercise script") && Phase2.record("contracts").read && App.totals().coding===1'));
+  await evaluate('document.querySelector("[data-phase3-note]").value+=" changed";document.querySelector("[data-phase3-note]").dispatchEvent(new Event("input"))');
+  check('Editing Phase 3 evidence clears only that completion',await evaluate('Phase3.completed()===0 && !document.querySelector("[data-phase3-complete]").checked && document.querySelector("[data-phase3-progress]").textContent.startsWith("0 / 4") && App.totals().coding===1'));
+  await route('#notebook');
+  check('Notebook escapes Phase 3 notes',await evaluate('document.querySelector("main").textContent.includes("Phase 3 <script>literal</script> note") && !document.querySelector(".notebook-card script")'));
+  await evaluate('App.download=(name,content)=>{window.phase3Export=content;};document.querySelector("#export-notes").click()');
+  check('Notebook exports all three phases and safely fences Phase 3 evidence',await evaluate('phase3Export.includes("Phase 3 — Programmatic GIS") && phase3Export.includes("Phase 2 — Data formats and standards") && phase3Export.includes("Test note") && phase3Export.includes("````text") && phase3Export.includes("Flood evidence")'));
+  await evaluate('window.confirm=()=>false;document.querySelector("#reset-progress").click()');
+  check('Cancelled reset preserves all three phases',await evaluate('Phase3.record("crs").read && Phase2.record("contracts").read && App.totals().coding===1'));
+  await route('#phase3/exercises');
+  check('Phase 3 workshop retains all four original tasks and solutions',await evaluate('document.querySelectorAll(".phase3-exercise").length===4 && document.querySelectorAll(".coding-solution").length===4'));
+  const phase3Downloads=await evaluate('[...document.querySelectorAll("main a[download]")].map(a=>a.getAttribute("href"))');
+  for(const file of new Set(phase3Downloads))assert.equal((await fetch(url+file)).status,200,file);
+  for(const file of ['gis-note-phase3.md','PHASE3-COVERAGE.md','exercises/phase3/README.md','exercises/phase3/flood_exposure.py','exercises/phase3/javascript-examples.mjs'])assert.equal((await fetch(url+file)).status,200,file);
+  check('Every Phase 3 workshop and overview download is served',true);
+  await route('#phase3/reference');
+  check('Phase 3 full-source index contains all 53 sections',await evaluate('document.querySelectorAll("[data-phase3-index]").length'),53);
+  await evaluate('document.querySelector("#phase3-search").value="Karney";document.querySelector("#phase3-search").dispatchEvent(new Event("input"))');
+  check('Phase 3 full-text search finds internal source detail',await evaluate('document.querySelectorAll("[data-phase3-index]").length>0 && document.querySelectorAll("[data-phase3-index]").length<53'));
+  await evaluate('document.querySelector("#phase3-search").value="zz-no-such-section";document.querySelector("#phase3-search").dispatchEvent(new Event("input"))');
+  check('Phase 3 search has a recoverable empty state',await evaluate('document.querySelectorAll("[data-phase3-index]").length===0 && document.querySelector("#phase3-source-index").textContent.includes("No matching")'));
+  await route('#phase3/reference/2-5');
+  check('Phase 3 equation renders local KaTeX and accessible MathML',await evaluate('document.querySelector(".source-equation .katex")!==null && document.querySelector(".source-equation math")!==null && !document.querySelector(".katex-error")'));
+  fs.writeFileSync(path.join(artifacts,'phase3-equation-desktop.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+  await send('Emulation.setDeviceMetricsOverride',{width:320,height:720,deviceScaleFactor:1,mobile:true});
+  const phase3Sources=await evaluate('Phase3Data.sections.map(s=>s.id)');
+  for(const id of phase3Sources){
+    await route(`#phase3/reference/${id}`);
+    await evaluate('Promise.all([...document.querySelectorAll(".source-text img")].map(img=>{img.loading="eager";return img.decode();}))');
+    check(`Phase 3 source ${id}: complete source and assets fit 320px`,await evaluate(`document.querySelector('[data-phase3-source]').dataset.phase3Source===${JSON.stringify(id)} && document.documentElement.scrollWidth<=innerWidth && [...document.querySelectorAll('.source-text img')].every(img=>img.naturalWidth>0)`));
+  }
+  for(const hash of ['#phase3',...phase3IDs.map(id=>'#phase3/lesson/'+id),'#phase3/exercises']){
+    await route(hash);check(`Phase 3 ${hash}: mobile reflows without overflow`,await evaluate('document.documentElement.scrollWidth<=innerWidth'));
+  }
+  await route('#phase3/exercises/4');
+  await evaluate('document.querySelector(".coding-solution").open=true');
+  check('Expanded Phase 3 capstone code and tables fit 320px',await evaluate('document.documentElement.scrollWidth<=innerWidth'));
+  fs.writeFileSync(path.join(artifacts,'phase3-capstone-mobile.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+  for(const hash of ['#phase3/lesson/missing','#phase3/reference/missing','#phase3/exercises/9']){
+    await route(hash);check(`Unknown Phase 3 route ${hash} has recovery`,await evaluate('document.querySelector("main a").hash==="#phase3"'));
+  }
+  await route('#notebook');
+  await evaluate('window.confirm=()=>true;document.querySelector("#reset-progress").click()');
+  check('Confirmed reset clears all three phases together',await evaluate('Phase3.completed()===0 && Phase2.completed()===0 && !Phase3.record("crs").notes && !Phase2.record("contracts").notes && App.totals().coding===0 && Object.keys(App.state.notes).length===0'));
   await navigate(pathToFileURL(path.join(root,'index.html')).href+'#lesson/resampling');
   check('Direct file opening works without a server',await evaluate('document.querySelectorAll("[data-coding-topic]").length===1 && document.querySelector("[data-code]").value.includes("def block_sum") && document.querySelector(".lab-output").textContent.includes("22.50")'));
   await route('#reference/4-3');
@@ -311,6 +379,11 @@ async function navigate(url) { const loaded=once('Page.loadEventFired');await se
   await route('#phase2/reference/3-1');
   await evaluate('document.querySelector(".source-diagram img").decode()');
   check('Phase 2 source diagrams work directly from disk',await evaluate('document.querySelector(".source-diagram img").naturalWidth>0 && document.querySelector("[data-phase2-source]").textContent.includes("flowchart TD")'));
+  await route('#phase3/reference/3-1');
+  await evaluate('document.querySelector(".source-diagram img").decode()');
+  check('Phase 3 diagrams work directly from disk',await evaluate('document.querySelector(".source-diagram img").naturalWidth>0 && document.querySelector("[data-phase3-source]").textContent.includes("flowchart TB")'));
+  await route('#phase3/reference/2-2');
+  check('Phase 3 equations work directly from disk',await evaluate('document.querySelector(".source-equation math")!==null'));
   const denied=await send('Page.addScriptToEvaluateOnNewDocument',{source:'Object.defineProperty(window,"localStorage",{get(){throw new Error("Simulated storage denial");}});'});
   await navigate(url+'#lesson/earth');
   check('Storage denial leaves lessons and exercise session usable',await evaluate('!App.storageAvailable && document.querySelector(".storage-warning")!==null && document.querySelectorAll("[data-coding-topic]").length===1'));
@@ -319,6 +392,9 @@ async function navigate(url) { const loaded=once('Page.loadEventFired');await se
   await route('#phase2/exercises/2');
   await evaluate('document.querySelector("[data-phase2-note]").value="Session-only tile report";document.querySelector("[data-phase2-note]").dispatchEvent(new Event("input"));document.querySelector("[data-phase2-complete]").click()');
   check('Storage-denied Phase 2 exercises remain usable in-session',await evaluate('!App.storageAvailable && Phase2.completed()===1 && Phase2.record("exercise-2").notes.includes("Session-only") && document.querySelector(".storage-warning")!==null'));
+  await route('#phase3/exercises/1');
+  await evaluate('document.querySelector("[data-phase3-note]").value="Session-only CRS report";document.querySelector("[data-phase3-note]").dispatchEvent(new Event("input"));document.querySelector("[data-phase3-complete]").click()');
+  check('Storage-denied Phase 3 exercises work without altering earlier phase progress',await evaluate('!App.storageAvailable && Phase3.completed()===1 && Phase2.completed()===1 && App.totals().coding===1 && Phase3.record("exercise-1").notes.includes("Session-only") && document.querySelector(".storage-warning")!==null'));
   await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:denied.identifier});
   check('No browser JavaScript exceptions',errors,[]);
   fs.writeFileSync(path.join(artifacts,'results.json'),JSON.stringify({checks:checks.length,errors},null,2));

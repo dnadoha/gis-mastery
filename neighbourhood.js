@@ -59,10 +59,50 @@ const Neighbourhood = {
     if(['geometry','raster','cells','topology','coverage','cartography'].includes(kind)) {
       title={geometry:'Our map begins with two schools, roads and a park',raster:'Add population values to the same neighbourhood',cells:'Find the centre of one population cell',topology:'Our two school areas share some space',coverage:'Count the shared cells only once',cartography:'Explain what our map’s colours mean'}[kind];
       body=this.map(kind);
-    } else if(kind==='coordinates'||kind==='crs'||kind==='formats'||kind==='qgis'||kind==='debugging') {
+    } else if(['coordinates','latitude','longitude'].includes(kind)) {
+      title={coordinates:'Give School A two named location numbers',latitude:'Latitude: begin at the equator',longitude:'Longitude: begin at the prime meridian'}[kind];
+      const latitudeColour='#256996',longitudeColour='#a65d27';
+      // Orthographic globe centred on 45° E, with north up and both reference lines visible.
+      const point=(lon,lat)=>[270+163*Math.cos(lat*Math.PI/180)*Math.sin((lon-45)*Math.PI/180),280-163*Math.sin(lat*Math.PI/180)];
+      const curve=(positions,colour,width=1,dash='')=>`<path d="${positions.map(([lon,lat],i)=>`${i?'L':'M'}${point(lon,lat).map(n=>n.toFixed(2)).join(' ')}`).join(' ')}" fill="none" stroke="${colour}" stroke-width="${width}" stroke-dasharray="${dash}"/>`;
+      const meridian=lon=>Array.from({length:91},(_,i)=>[lon,-90+i*2]);
+      const parallel=lat=>Array.from({length:91},(_,i)=>[-45+i*2,lat]);
+      body='<circle cx="270" cy="280" r="163" fill="#edf4e7" stroke="#668779" stroke-width="2"/>';
+      [-60,-30,30,60].forEach(lat=>{body+=curve(parallel(lat),'#c5d6c6');});
+      [-15,15,45,75,105].forEach(lon=>{body+=curve(meridian(lon),'#c5d6c6');});
+      body+=curve(parallel(0),'#668779',2);
+      if(kind!=='latitude') body+=curve(meridian(0),longitudeColour,2,'5 4')+curve(meridian(this.school.lon),longitudeColour,3);
+      if(kind!=='longitude') body+=curve(parallel(this.school.lat),latitudeColour,3);
+      const [x,y]=point(this.school.lon,this.school.lat);
+      body+=this.dot(x,y,'#245c48',8)+L(x+8,y-5,420,185)+L(420,185,490,185)+T(399,172,'School A',20);
+      body+=T(270,106,'North Pole · 90° N',17,'#284c40','middle')+T(270,470,'South Pole · 90° S',17,'#284c40','middle');
+      if(kind!=='latitude') body+=T(32,150,'Prime meridian',17,longitudeColour)+T(32,172,'0° longitude',16,longitudeColour)+L(145,180,...point(0,30),longitudeColour);
+      body+=T(32,380,'Equator',17)+T(32,402,'0° latitude',16)+L(108,365,140,280);
+      if(kind==='coordinates') {
+        body+=R(520,125,395,125,'#fbf1e7','#dec4ae')+T(540,156,'LONGITUDE · EAST / WEST',17,longitudeColour)+T(540,193,`${this.school.lon}° E`,29,longitudeColour)+T(540,229,'East of the prime meridian',18);
+        body+=R(520,270,395,125,'#edf5fa','#b8d2e1')+T(540,301,'LATITUDE · NORTH / SOUTH',17,latitudeColour)+T(540,338,`${this.school.lat}° N`,29,latitudeColour)+T(540,374,'North of the equator',18);
+        body+=T(520,434,'Two named numbers. One school.',21)+T(520,466,'Longitude first: [90.4125, 23.8103]',18);
+      } else if(kind==='latitude') {
+        body+=R(520,140,395,135,'#edf5fa','#b8d2e1')+T(540,174,'LATITUDE · NORTH / SOUTH',17,latitudeColour)+T(540,216,`${this.school.lat}° N`,32,latitudeColour)+T(540,250,'School A is north of the equator.',18);
+        body+=T(520,320,'Start at 0° on the equator.',21)+T(520,360,'North → towards 90° N',20)+T(520,397,'South → towards 90° S',20)+T(520,453,'Degrees measure an angle, not metres.',18);
+      } else {
+        body+=R(520,140,395,135,'#fbf1e7','#dec4ae')+T(540,174,'LONGITUDE · EAST / WEST',17,longitudeColour)+T(540,216,`${this.school.lon}° E`,32,longitudeColour)+T(540,250,'School A is east of the prime meridian.',18);
+        body+=T(520,320,'Dashed orange: the starting line.',20)+T(520,358,'Solid orange: School A’s meridian.',20)+T(520,414,'The same school also has latitude:',19)+T(520,450,`${this.school.lat}° N`,24,latitudeColour);
+      }
+      caption='Schematic globe. School A is an invented example near Dhaka, not a surveyed school entrance.';
+    } else if(kind==='coordinate-fields') {
+      title='Keep each number in its named field';
+      body=R(55,125,405,145,'#fbf1e7','#dec4ae')+T(80,163,'longitude',24,'#a65d27')+T(80,207,this.school.lon,32,'#a65d27')+T(80,245,'East / west · degrees',18);
+      body+=R(500,125,405,145,'#edf5fa','#b8d2e1')+T(525,163,'latitude',24,'#256996')+T(525,207,this.school.lat,32,'#256996')+T(525,245,'North / south · degrees',18);
+      body+=L(258,270,258,322,'#a65d27')+L(250,312,258,322,'#a65d27')+L(266,312,258,322,'#a65d27');
+      body+=L(703,270,703,322,'#256996')+L(695,312,703,322,'#256996')+L(711,312,703,322,'#256996');
+      body+=R(105,325,750,105)+T(480,356,'WHEN THE TOOL ASKS FOR LONGITUDE FIRST',17,'#284c40','middle');
+      body+=T(210,401,'[',32)+T(260,401,'90.4125',32,'#a65d27')+T(476,401,',',32)+T(590,401,'23.8103',32,'#256996')+T(790,401,']',32);
+      body+=T(480,474,'Always read the field names: another tool may ask for latitude first.',20,'#284c40','middle');
+      caption='Both fields describe the same invented School A. Axis order is the required order of the numbers.';
+    } else if(kind==='crs'||kind==='formats'||kind==='qgis'||kind==='debugging') {
       title={coordinates:'Give School A two named location numbers',crs:'Keep the meaning beside School A’s numbers',formats:'Save the school position with its name',qgis:'Tell QGIS which column means what',debugging:'Check the same school before changing anything'}[kind];
       body=R(45,115,415,295)+T(70,155,'School A',25)+T(70,215,'Longitude: 90.4125° E',24)+T(70,263,'Latitude:   23.8103° N',24);
-      if(kind==='coordinates') body+=T(70,326,'East / west, then north / south')+T(500,170,'Keep the names attached.',23)+T(500,232,'Longitude: east or west')+T(500,278,'Latitude: north or south');
       if(kind==='crs') body+=T(70,326,'Earth reference: WGS 84')+T(70,371,'Units: degrees')+T(500,170,'CRS label: EPSG:4326',25)+T(500,232,'The label identifies the rules.')+T(500,284,'Also record the field order:')+T(500,323,'longitude, latitude',22);
       if(kind==='formats') body+=T(70,326,'Name is an attribute.')+T(500,163,'GeoJSON position:',23)+T(500,211,'[90.4125, 23.8103]',25)+T(500,275,'Its format requires')+T(500,310,'WGS 84 longitude, latitude.')+T(500,370,'Keep source and date too.');
       if(kind==='qgis') body+=T(70,326,'Input: neighbourhood-school.csv',18)+T(500,160,'Import settings',25)+T(500,215,'X field → lon')+T(500,257,'Y field → lat')+T(500,299,'Geometry CRS → EPSG:4326')+T(500,365,'Then: Add → Zoom to Layer');
