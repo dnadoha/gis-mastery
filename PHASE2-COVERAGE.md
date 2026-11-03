@@ -1,8 +1,8 @@
 # Phase 2 source coverage
 
-All 81 sections of [the supplied note](gis-note-phase2.md) are retained without editing. 30 tables, 44 code/text blocks and 6 Mermaid diagrams are rendered offline.
+All 81 sections of [the supplied note](gis-note-phase2.md) are retained without content edits (line endings canonicalised to LF for cross-platform checks). 30 tables, 44 code/text blocks and 6 Mermaid diagrams are rendered offline.
 
-SHA-256: `b2bcd893efde198e736cdde4f113512ec965b7e020d6aa935ce3a9135dff7bfc`
+SHA-256 of LF source: `45e423a318b9434c532500d9dd74159f61d2ac6e1dd6f933abc4746e64361d27`
 
 Reading clarifications and corrected downloadable helpers are separate from the verbatim source. These are content-coverage checks, not certification of GDAL command execution or INSPIRE conformity.
 

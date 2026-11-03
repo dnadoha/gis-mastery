@@ -17,7 +17,7 @@ from gpkg_blob import parse_gpkg_blob
 from mvt_decode import decode, zz, unzigzag
 from tilemath import MAX_LAT, lonlat_to_3857, tile_bounds_3857, tile_xyz, tms_y
 from tiles_cover import cover
-from verify_package import raster_facts, verify
+from verify_package import EXPECTED_RECORDS, raster_facts, records_match, verify
 
 HERE = Path(__file__).resolve().parent
 
@@ -147,6 +147,39 @@ class Helpers(unittest.TestCase):
             self.assertTrue(any(not r["ok"] for r in results))
             self.assertFalse((root / "vector/parcels.gpkg").exists())
             self.assertTrue(any(r["check"] == "COG inspection (GDAL required)" and not r["ok"] for r in results))
+
+    def test_metadata_missing_elements_are_failed_not_crashes(self):
+        with tempfile.TemporaryDirectory(prefix="phase2-xml-", dir=os.environ.get("OPENCODE_TMP")) as tmp:
+            root = Path(tmp)
+            (root / "metadata").mkdir()
+            (root / "metadata/parcels.xml").write_text('<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd"/>')
+            with patch("verify_package.run", side_effect=FileNotFoundError("GDAL unavailable")):
+                results = verify(root)
+            self.assertTrue(any(r["check"] == "metadata: bbox matches" and not r["ok"] for r in results))
+
+    def test_attribute_values_and_nulls_are_preserved(self):
+        self.assertTrue(records_match(list(reversed(EXPECTED_RECORDS))))
+        records = copy.deepcopy(EXPECTED_RECORDS)
+        records[2]["population_total"] = 0
+        self.assertFalse(records_match(records))
+        records = copy.deepcopy(EXPECTED_RECORDS)
+        records[0]["land_use_class"] = "CORRUPTED"
+        self.assertFalse(records_match(records))
+
+    def test_sqlite_file_is_unlocked_after_inspection(self):
+        import sqlite3
+        from contextlib import closing
+        with tempfile.TemporaryDirectory(prefix="phase2-sqlite-", dir=os.environ.get("OPENCODE_TMP")) as tmp:
+            root = Path(tmp)
+            (root / "vector").mkdir()
+            file = root / "vector/parcels.gpkg"
+            with closing(sqlite3.connect(file)) as con:
+                con.execute("CREATE TABLE parcels (fid INTEGER)")
+                con.commit()
+            with patch("verify_package.run", side_effect=FileNotFoundError("GDAL unavailable")):
+                verify(root)
+            file.unlink()  # On Windows this fails if the inspection connection leaked.
+            self.assertFalse(file.exists())
 
     def test_real_dem_generator_reference_values(self):
         with tempfile.TemporaryDirectory(prefix="phase2-dem-", dir=os.environ.get("OPENCODE_TMP")) as tmp:

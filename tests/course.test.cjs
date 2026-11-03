@@ -34,7 +34,18 @@ test('all 72 downloadable programs match the visible exercise definitions',()=>{
   const programming=context.programming;
   for(const t of topics)for(const language of ['python','go'])for(const solution of [false,true]){
     const file=path.join(root,'exercises',solution?'solutions':'',language,programming.filepath(t.id,language));
-    assert.equal(fs.readFileSync(file,'utf8'),programming.file(t.id,language,solution),`Stale download: ${file}`);
+    assert.equal(fs.readFileSync(file,'utf8').replace(/\r\n/g,'\n'),programming.file(t.id,language,solution),`Stale download: ${file}`);
+  }
+});
+
+test('LF and CRLF checkouts generate identical complete Python and Go programs',()=>{
+  const source=fs.readFileSync(path.join(root,'programming.js'),'utf8').replace(/\r\n/g,'\n');
+  const lf=vm.runInNewContext(source+';Programming');
+  const crlf=vm.runInNewContext(source.replace(/\n/g,'\r\n')+';Programming');
+  for(const id of Object.keys(lf.lessons))for(const language of ['python','go'])for(const solution of [false,true]){
+    const expected=lf.file(id,language,solution),actual=crlf.file(id,language,solution);
+    assert.equal(actual,expected,`${id}/${language}/${solution}: checkout line endings changed the program`);
+    assert.ok(!actual.includes('\r'),`${id}/${language}/${solution}: generated output must use LF`);
   }
 });
 
@@ -50,6 +61,13 @@ test('Go exercises have separate package directories with no shared declarations
       assert.ok(readme.includes(`](${directory.replace('exercises/','')}/${topic.id}/${files[0]})`));
     }
   }
+});
+
+test('the generated beginner guide links to existing exercise downloads',()=>{
+  const guide=fs.readFileSync(path.join(root,'beginner-geospatial-guide.md'),'utf8');
+  const links=[...guide.matchAll(/\]\((exercises\/(?:solutions\/)?(?:python|go)\/[^)]+)\)/g)];
+  assert.equal(links.length,36);
+  for(const [,file] of links)assert.ok(fs.existsSync(path.join(root,file)),`Missing guide download: ${file}`);
 });
 
 test('exercise UI downloads link to the deployed starter and solution files',()=>{

@@ -41,6 +41,8 @@ It is a limited polygon sanity check, NOT a full RFC 7946 or topology validator.
 3. **Raster:** make_dem.py generates dem.asc locally (~4.8 MB), not in the website.
    Fill raster_report.md. Use `-a_nodata none` for the deliberately broken NoData
    experiment: merely omitting the option inherits the source declaration.
+   GTiff uses `PREDICTOR=3`; the COG driver documents `PREDICTOR=FLOATING_POINT`
+   (or `YES` for automatic selection), so the command download distinguishes them.
 4. **Bytes:** gpkg_blob.py, sample_polygon.hex, mvt_decode.py. These read a header
    and command integers; they do not validate every byte of a full geometry/tile.
 5. **Release:** verify_package.py, parcels.xml, release_readme.md, requests.txt.
@@ -51,6 +53,7 @@ It is a limited polygon sanity check, NOT a full RFC 7946 or topology validator.
 before running `bash commands.sh` in a fresh directory. It needs all helper files,
 GDAL and Python; it intentionally stops on errors. Rerunning into existing outputs
 may fail: use a new directory rather than deleting your originals.
+The script refuses to start if work/, release/, dem.asc or tiles.csv already exists.
 
 ## What the release checker really checks
 

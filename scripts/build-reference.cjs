@@ -38,7 +38,7 @@ function splitSource(source,sourceMapping=mapping) {
 
 async function build() {
   const {Marked,Renderer}=await import('marked'),katex=require('katex');
-  const source=fs.readFileSync(path.join(root,'core-geospatial-concepts.md'),'utf8'),sections=splitSource(source);
+  const source=fs.readFileSync(path.join(root,'core-geospatial-concepts.md'),'utf8').replace(/\r\n/g,'\n'),sections=splitSource(source);
   const byAnchor=new Map(sections.map(s=>[s.anchor,s.id]));
   const course=vm.runInNewContext(['course.js','beginner.js'].map(f=>fs.readFileSync(path.join(root,f),'utf8')).join('\n')+'\n({topics:TOPICS,path:Beginner.path});');
   for(const s of sections)for(const id of s.topics)if(!course.path.includes(id))throw Error(`Unknown lesson ${id}`);
@@ -121,7 +121,7 @@ The earlier chapter explanations were summaries. They did not reproduce every pa
 
 - **${counts.sections} / ${counts.sections} source sections** explicitly mapped, including introductory and parent sections.
 - **${counts.tables} tables, ${counts.codeBlocks} code/text listings, ${counts.equations} displayed equations, ${counts.diagrams} Mermaid diagrams and ${counts.images} source images** rendered in the full readings.
-- The saved source slices concatenate byte-for-byte to the original UTF-8 text; SHA-256: \`${data.sourceSha256}\`.
+- The saved source slices concatenate byte-for-byte to the LF-canonical UTF-8 source (no content edits); SHA-256: \`${data.sourceSha256}\`.
 - Unmapped, duplicated or stale section mappings fail the build. Tests detect source changes, missing content, missing figures and stale generated output.
 - This is a content-inclusion audit. External QGIS/PostGIS workflows and all third-party code examples are not thereby certified as executed. Short reading clarifications accompany source passages whose assumptions need care.
 

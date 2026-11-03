@@ -5,7 +5,7 @@ const {topics,beginner,scene,reference,programming}=vm.runInNewContext(
   ['course.js','geo.js','bangladesh.js','teaching.js','neighbourhood.js','beginner.js','reference-data.js','programming.js'].map(file=>fs.readFileSync(path.join(root,file),'utf8')).join('\n')+
   '\n({topics:TOPICS,beginner:Beginner,scene:Neighbourhood,reference:ReferenceData,programming:Programming});'
 );
-const source=fs.readFileSync(path.join(root,'core-geospatial-concepts.md'),'utf8');
+const source=fs.readFileSync(path.join(root,'core-geospatial-concepts.md'),'utf8').replace(/\r\n/g,'\n');
 if(crypto.createHash('sha256').update(source).digest('hex')!==reference.sourceSha256)throw Error('Rebuild the complete reference first: npm run build');
 const intro=`# GIS from zero: one neighbourhood, one connected story
 

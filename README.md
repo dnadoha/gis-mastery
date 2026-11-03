@@ -1,6 +1,6 @@
 # Fieldnotes — the geospatial field guide
 
-A static HTML/CSS/JavaScript learning website with a connected beginner story and the complete technical reading from `core-geospatial-concepts.md`. All generated pages, equations, diagrams and font assets are included for offline use.
+A static HTML/CSS/JavaScript learning website with two course phases. Phase 1 follows a connected beginner story with the complete technical reading from `core-geospatial-concepts.md`. Phase 2 follows the Amsterdam publishing project in `gis-note-phase2.md`. All generated pages, equations, diagrams and font assets are included for offline use.
 
 ## Open it
 
@@ -14,7 +14,29 @@ python3 -m http.server 8000 --bind 0.0.0.0
 
 Visit **http://localhost:8000** or use this computer’s local-network IP address from another device on the same network. Start at **http://localhost:8000/#lesson/geometry**. Interactive diagrams need no backend. Programming exercises run locally with Python or Go and need only the standard library. Web fonts are optional and fall back to system fonts offline.
 
-## Explore
+## Phase 2 — Data formats and standards
+
+Open **index.html#phase2** after Phase 1. Twelve connected chapters cover coordinate contracts, vector conversion, GeoTIFF/COG, cloud-native reads, NetCDF/Zarr, XYZ/TMS, binary geometry, OGC services and metadata, ending in a verified publishing package. The five progressive exercises use Python 3 and locally installed GDAL/OGR; the site does not run them for you.
+
+- `phase2-course.js`: chapter sequence, explanations, source mappings and explicit corrections.
+- `phase2-data.js`: generated full-source reader — **81 of 81 sections**, 30 tables, 44 code/text blocks and six offline Mermaid diagrams. [PHASE2-COVERAGE.md](PHASE2-COVERAGE.md) records mappings and the LF-canonical source hash.
+- `phase2.js`: Phase 2 path, chapters, source search, workshop and notebook integration. Existing Phase 1 URLs and saved learner records remain intact; Phase 2 has separate chapter/exercise records under the existing storage key.
+- `exercises/phase2/`: source data, corrected stdlib Python helpers, command examples, report templates, all five original tasks and full solutions. See [the setup guide](exercises/phase2/README.md).
+
+The supplied note is preserved without content edits. Reading clarifications explain MultiPolygon checks, inherited NoData, theoretical vs actual tile counts and source-only vs released-artifact verification. Downloads correct these pitfalls separately. Templates never pretend to be execution evidence or INSPIRE-conformant metadata. Opening a solution does not award completion; completion is self-reported and editing exercise evidence clears it. Both phases are included in notebook export and the explicitly confirmed full reset.
+
+Rebuild Phase 2 after editing its source or chapter mappings:
+
+```bash
+npm ci
+npm run build:phase2
+node --test tests/phase2.test.cjs
+python exercises/phase2/test_helpers.py
+```
+
+Use the Chromium configuration described below. Commit generated `phase2-data.js`, `PHASE2-COVERAGE.md`, six `assets/figures/phase2-*.svg` files and generated exercise/source downloads. Vercel serves these files without installing dependencies or launching a browser. Python helper tests do not claim GDAL/PMTiles conversions ran: validate actual releases with those tools locally.
+
+## Explore Phase 1
 
 - **New to GIS?** Start at [chapter 1](index.html#lesson/geometry) or download [the connected beginner guide](beginner-geospatial-guide.md). Follow one invented neighbourhood near Dhaka to answer “How many people live near at least one school?” The same schools, homes and population grid connect all 18 chapters.
 - Read in sequence: draw the places → locate them → measure carefully → add population → count people once → explain and share. Every chapter recalls the previous step, explains new terms as they appear, develops three short reading sections, includes an explained diagram and a pause question, and introduces the next step.
@@ -82,7 +104,7 @@ npm run build
 
 To use an already installed Chromium, set `PUPPETEER_SKIP_DOWNLOAD=true` during installation and `PUPPETEER_EXECUTABLE_PATH` during the build. In this environment the build uses `PUPPETEER_EXECUTABLE_PATH=/tmp/opencode/gis-chromium npm run build`. The prebuilt website itself still opens without installing dependencies.
 
-The source slices must reconstruct the original document exactly. Tests verify every section's mapping, code and equation retention, image availability, and the complete guide/Appendix A download. Rebuild the full reference after changing `core-geospatial-concepts.md`; the guide generator rejects stale reference data.
+The source slices must reconstruct the LF-canonical source exactly, without content edits. Both phases use LF for generated source text and hashes so Windows CRLF checkouts do not change the result. Tests still compare every section, complete code listing and generated program; only checkout line endings are canonicalised. They also verify source mappings, equation retention, image availability and the complete guide/Appendix A download. Rebuild the full reference after changing `core-geospatial-concepts.md`; the guide generator rejects stale reference data. If an exercise download drifts from its definition, regenerate it with `node scripts/build-programming.cjs` rather than editing the generated copy; the separate Go package directories are preserved.
 
 Run the calculation/content tests with:
 

@@ -18,7 +18,7 @@ The earlier chapter explanations were summaries. They did not reproduce every pa
 
 - **71 / 71 source sections** explicitly mapped, including introductory and parent sections.
 - **34 tables, 33 code/text listings, 9 displayed equations, 6 Mermaid diagrams and 16 source images** rendered in the full readings.
-- The saved source slices concatenate byte-for-byte to the original UTF-8 text; SHA-256: `4c0ba546313b452a86207db300865a5ea56b1919e9ccb1cf0e64f6904d5ac72a`.
+- The saved source slices concatenate byte-for-byte to the LF-canonical UTF-8 source (no content edits); SHA-256: `4c0ba546313b452a86207db300865a5ea56b1919e9ccb1cf0e64f6904d5ac72a`.
 - Unmapped, duplicated or stale section mappings fail the build. Tests detect source changes, missing content, missing figures and stale generated output.
 - This is a content-inclusion audit. External QGIS/PostGIS workflows and all third-party code examples are not thereby certified as executed. Short reading clarifications accompany source passages whose assumptions need care.
 

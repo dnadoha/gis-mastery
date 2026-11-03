@@ -2,6 +2,10 @@
 # Worked conversion commands. Run in a NEW directory with the downloaded helpers.
 # Requires Bash, Python 3 and GDAL/OGR. Outputs go in work/; originals are retained.
 set -euo pipefail
+if [ -e work ] || [ -e release ] || [ -e dem.asc ] || [ -e tiles.csv ]; then
+  echo "Use a fresh directory: work/, release/, dem.asc or tiles.csv already exists." >&2
+  exit 1
+fi
 mkdir -p work
 
 # The original intentionally reports feature 2's winding problem (exit 1).
@@ -24,7 +28,7 @@ python make_dem.py
 gdal_translate -of GTiff -ot Float32 -a_srs EPSG:28992 -a_nodata -9999 \
   -co TILED=YES -co COMPRESS=DEFLATE -co PREDICTOR=3 dem.asc work/dem.tif
 gdal_translate -of COG work/dem.tif work/dem_cog.tif \
-  -co COMPRESS=DEFLATE -co PREDICTOR=3 -co BLOCKSIZE=256 -co RESAMPLING=AVERAGE
+  -co COMPRESS=DEFLATE -co PREDICTOR=FLOATING_POINT -co BLOCKSIZE=256 -co RESAMPLING=AVERAGE
 # Explicitly remove inherited NoData for the deliberately broken comparison only.
 gdal_translate -of GTiff -a_srs EPSG:28992 -a_nodata none dem.asc work/dem_no_nodata.tif
 gdalinfo -stats work/dem.tif

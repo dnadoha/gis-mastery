@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),crypto=require('node:crypto');
 const root=path.resolve(__dirname,'..');
-const source=fs.readFileSync(path.join(root,'core-geospatial-concepts.md'),'utf8');
+const source=fs.readFileSync(path.join(root,'core-geospatial-concepts.md'),'utf8').replace(/\r\n/g,'\n');
 const {data,beginner,reference}=vm.runInNewContext(['course.js','beginner.js','reference-data.js','reference.js'].map(f=>fs.readFileSync(path.join(root,f),'utf8')).join('\n')+'\n({data:ReferenceData,beginner:Beginner,reference:Reference});');
 const sha=text=>crypto.createHash('sha256').update(text).digest('hex');
 const escape=text=>text.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -57,9 +57,9 @@ test('full code, equations, tables and diagrams survive rendering instead of bec
 });
 
 test('the complete download and Appendix A match the original source',()=>{
-  const guide=fs.readFileSync(path.join(root,'beginner-geospatial-guide.md'),'utf8');
+  const guide=fs.readFileSync(path.join(root,'beginner-geospatial-guide.md'),'utf8').replace(/\r\n/g,'\n');
   assert.ok(guide.endsWith(source),'The complete guide must include the full technical note');
   const appendix=data.sections.find(s=>s.key==='appendix-a').markdown.match(/```python\n([\s\S]*?)\n```/)[1];
-  assert.equal(fs.readFileSync(path.join(root,'data/geolib.py'),'utf8'),appendix+'\n');
+  assert.equal(fs.readFileSync(path.join(root,'data/geolib.py'),'utf8').replace(/\r\n/g,'\n'),appendix+'\n');
   for(const s of data.sections)assert.ok(guide.includes(`](#${s.anchor})`),`Missing detailed-reading link ${s.key}`);
 });

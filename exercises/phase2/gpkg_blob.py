@@ -2,6 +2,7 @@
 """Read standard GeoPackage geometry headers and a WKB type, not full WKB."""
 import math
 import struct
+from contextlib import closing
 
 ENV_DOUBLES = {0: 0, 1: 4, 2: 6, 3: 6, 4: 8}
 WKB_NAMES = {1: "Point", 2: "LineString", 3: "Polygon", 4: "MultiPoint",
@@ -61,6 +62,6 @@ if __name__ == "__main__":
     if file.suffix == ".hex":
         print(parse_gpkg_blob(bytes.fromhex(file.read_text().strip())))
     else:
-        with sqlite3.connect(file.as_uri() + "?mode=ro", uri=True) as con:
+        with closing(sqlite3.connect(file.as_uri() + "?mode=ro", uri=True)) as con:
             for fid, blob in con.execute("SELECT fid, geom FROM parcels ORDER BY fid"):
                 print(fid, parse_gpkg_blob(bytes(blob)))

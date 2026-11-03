@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),crypto=require('node:crypto');
 const root=path.resolve(__dirname,'..');
-const read=file=>fs.readFileSync(path.join(root,file),'utf8');
+const read=file=>fs.readFileSync(path.join(root,file),'utf8').replace(/\r\n/g,'\n');
 const {course,data,phase2}=vm.runInNewContext(['phase2-course.js','phase2-data.js','phase2.js'].map(read).join('\n')+'\n({course:Phase2Course,data:Phase2Data,phase2:Phase2});');
 const sha=value=>crypto.createHash('sha256').update(value).digest('hex');
 const escape=value=>value.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -51,6 +51,7 @@ test('all five exercise tasks, full solutions, corrected helpers and report down
     assert.ok(course.lessons.some(l=>l.id===exercise.lesson&&l.exercise===n));
   }
   assert.ok(read('exercises/phase2/commands.sh').includes('-a_nodata none'));
+  assert.ok(read('exercises/phase2/commands.sh').includes('-co PREDICTOR=FLOATING_POINT'));
   assert.ok(read('exercises/phase2/check_geojson.py').includes('MultiPolygon'));
   assert.ok(read('exercises/phase2/verify_package.py').includes('raster/dem_cog.tif'));
   assert.ok(read('exercises/phase2/README.md').includes('NOT a full RFC 7946'));
