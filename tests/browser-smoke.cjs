@@ -369,8 +369,64 @@ async function navigate(url) { const loaded=once('Page.loadEventFired');await se
   for(const hash of ['#phase3/lesson/missing','#phase3/reference/missing','#phase3/exercises/9']){
     await route(hash);check(`Unknown Phase 3 route ${hash} has recovery`,await evaluate('document.querySelector("main a").hash==="#phase3"'));
   }
+  await route('#phase4');
+  check('Phase 4 offers nine chapters and independent progress',await evaluate('document.querySelectorAll(".phase4-card").length===9 && document.querySelectorAll("[data-phase4-topic]").length===9 && Phase4.completed()===0 && Phase3.record("crs").read && App.totals().coding===1'));
+  check('Phase 4 overview fits 320px',await evaluate('document.documentElement.scrollWidth<=innerWidth'));
+  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  check('Phase 4 overview fits desktop',await evaluate('document.documentElement.scrollWidth<=innerWidth'));
+  fs.writeFileSync(path.join(artifacts,'phase4-home-desktop.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+  await route('#phase4/lesson/foundations');
+  await evaluate('document.querySelector(".chapter-transition .primary").click();new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+  check('Phase 4 Next follows chapter order',await evaluate('location.hash==="#phase4/lesson/relationships"'));
+  await send('Emulation.setDeviceMetricsOverride',{width:320,height:800,deviceScaleFactor:1,mobile:true});
+  const phase4IDs=await evaluate('Phase4Course.lessons.map(l=>l.id)');
+  for(const id of phase4IDs){
+    await route(`#phase4/lesson/${id}`);
+    await evaluate('Promise.all([...document.querySelectorAll(".journey-figure img")].map(image=>{image.loading="eager";return image.decode();}))');
+    check(`Phase 4 ${id}: connected reading and navigation`,await evaluate('document.querySelectorAll(".reading-step").length===3 && document.querySelectorAll("[data-phase4-topic][aria-current=page]").length===1 && document.querySelector("#phase4-source")!==null && [...document.querySelectorAll(".journey-figure img")].every(img=>img.naturalWidth>0) && document.documentElement.scrollWidth<=innerWidth'));
+  }
+  await route('#phase4/lesson/queries/source-4-5-2');
+  check('Phase 4 source deep links reveal the inclusive-threshold clarification',await evaluate('document.querySelector("#phase4-source").open && document.querySelector("#phase4-source-4-5-2").open && document.querySelector("#phase4-source-4-5-2 .source-clarification").textContent.includes("strict")'));
+  await route('#phase4/lesson/registry/notes');
+  await evaluate('document.querySelector("#phase4-note").value="Registry <script>literal</script> note";document.querySelector("#phase4-note").dispatchEvent(new Event("input"));document.querySelector("[data-phase4-read]").click()');
+  await route('#phase4/exercises/4');
+  check('Phase 4 task and complete solution start separately',await evaluate('document.querySelector("[data-phase4-source=exercise-4]").textContent.includes("Success criteria") && !document.querySelector(".coding-solution").open'));
+  await evaluate('document.querySelector(".coding-solution").open=true');
+  check('Viewing SQL solutions awards no completion',await evaluate('Phase4.completed()===0'));
+  check('Expanded SQL capstone fits 320px',await evaluate('document.documentElement.scrollWidth<=innerWidth'));
+  fs.writeFileSync(path.join(artifacts,'phase4-registry-mobile.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+  await evaluate('let e=document.querySelector("[data-phase4-note]");e.value="SQL evidence ``` <script>literal</script>";e.dispatchEvent(new Event("input"));document.querySelector("[data-phase4-complete]").click()');
+  check('Phase 4 completion updates the header and workshop',await evaluate('Phase4.completed()===1 && document.querySelector("#total-progress").textContent.includes("1 / 4") && document.querySelector("[data-phase4-progress]").textContent.startsWith("1 / 4")'));
+  const phase4Reloaded=once('Page.loadEventFired');await send('Page.reload');await phase4Reloaded;
+  check('Phase 4 records survive reload with earlier work preserved',await evaluate('Phase4.record("registry").read && Phase4.record("registry").notes.includes("<script>") && document.querySelector("[data-phase4-complete]").checked && !document.querySelector(".phase4-exercise script") && Phase3.record("crs").read && Phase2.record("contracts").read && App.totals().coding===1'));
+  await evaluate('document.querySelector("[data-phase4-note]").value+=" revised";document.querySelector("[data-phase4-note]").dispatchEvent(new Event("input"))');
+  check('Editing SQL evidence clears its completion',await evaluate('Phase4.completed()===0 && !document.querySelector("[data-phase4-complete]").checked'));
+  await route('#phase4/exercises');
+  check('Phase 4 workshop includes all four tasks and solutions',await evaluate('document.querySelectorAll(".phase4-exercise").length===4 && document.querySelectorAll(".coding-solution").length===4'));
+  const phase4Downloads=await evaluate('[...document.querySelectorAll("main a[download]")].map(a=>a.getAttribute("href"))');
+  for(const file of new Set([...phase4Downloads,'phase-4-spatial-databases.md','PHASE4-COVERAGE.md','exercises/phase4/README.md','exercises/phase4/worked-example.sql','exercises/phase4/toy-graph.sql','exercises/phase4/incident-mvt.sql']))assert.equal((await fetch(url+file)).status,200,file);
+  await route('#phase4/reference');
+  check('Phase 4 source index contains all 60 sections',await evaluate('document.querySelectorAll("[data-phase4-index]").length'),60);
+  await evaluate('document.querySelector("#phase4-search").value="upper_inf";document.querySelector("#phase4-search").dispatchEvent(new Event("input"))');
+  check('Phase 4 searches complete SQL source',await evaluate('document.querySelectorAll("[data-phase4-index]").length>0 && document.querySelectorAll("[data-phase4-index]").length<60'));
+  await evaluate('document.querySelector("#phase4-search").value="zz-no-such-section";document.querySelector("#phase4-search").dispatchEvent(new Event("input"))');
+  check('Phase 4 source search provides a recoverable empty state',await evaluate('document.querySelectorAll("[data-phase4-index]").length===0 && document.querySelector("#phase4-source-index").textContent.includes("No matching")'));
+  const phase4Sources=await evaluate('Phase4Data.sections.map(s=>s.id)');
+  for(const id of phase4Sources){
+    await route(`#phase4/reference/${id}`);
+    await evaluate('Promise.all([...document.querySelectorAll(".source-text img")].map(image=>{image.loading="eager";return image.decode();}))');
+    check(`Phase 4 source ${id}: complete reading fits mobile`,await evaluate(`document.querySelector('[data-phase4-source]').dataset.phase4Source===${JSON.stringify(id)} && document.documentElement.scrollWidth<=innerWidth && [...document.querySelectorAll('.source-text img')].every(img=>img.naturalWidth>0)`));
+  }
+  for(const hash of ['#phase4/lesson/missing','#phase4/reference/missing','#phase4/exercises/9']){
+    await route(hash);check(`Unknown Phase 4 route ${hash} has recovery`,await evaluate('document.querySelector("main a").hash==="#phase4"'));
+  }
   await route('#notebook');
+  await evaluate('App.download=(name,content)=>{window.phase4Export=content;};document.querySelector("#export-notes").click()');
+  check('Notebook exports all four phases with safe SQL evidence fences',await evaluate('phase4Export.includes("Phase 4 — Spatial databases") && phase4Export.includes("Phase 3 — Programmatic GIS") && phase4Export.includes("Phase 2 — Data formats and standards") && phase4Export.includes("Test note") && phase4Export.includes("````text") && phase4Export.includes("SQL evidence")'));
+  await evaluate('window.confirm=()=>false;document.querySelector("#reset-progress").click()');
+  check('Cancelled reset preserves all four phases',await evaluate('Phase4.record("registry").read && Phase3.record("crs").read && Phase2.record("contracts").read && App.totals().coding===1'));
   await evaluate('window.confirm=()=>true;document.querySelector("#reset-progress").click()');
+  check('Confirmed reset also clears Phase 4 records',await evaluate('Object.keys(App.state.phase4).length===0'));
   check('Confirmed reset clears all three phases together',await evaluate('Phase3.completed()===0 && Phase2.completed()===0 && !Phase3.record("crs").notes && !Phase2.record("contracts").notes && App.totals().coding===0 && Object.keys(App.state.notes).length===0'));
   await navigate(pathToFileURL(path.join(root,'index.html')).href+'#lesson/resampling');
   check('Direct file opening works without a server',await evaluate('document.querySelectorAll("[data-coding-topic]").length===1 && document.querySelector("[data-code]").value.includes("def block_sum") && document.querySelector(".lab-output").textContent.includes("22.50")'));
@@ -384,6 +440,9 @@ async function navigate(url) { const loaded=once('Page.loadEventFired');await se
   check('Phase 3 diagrams work directly from disk',await evaluate('document.querySelector(".source-diagram img").naturalWidth>0 && document.querySelector("[data-phase3-source]").textContent.includes("flowchart TB")'));
   await route('#phase3/reference/2-2');
   check('Phase 3 equations work directly from disk',await evaluate('document.querySelector(".source-equation math")!==null'));
+  await route('#phase4/reference/3-4');
+  await evaluate('document.querySelector(".source-diagram img").decode()');
+  check('Phase 4 diagrams work directly from disk',await evaluate('document.querySelector(".source-diagram img").naturalWidth>0 && document.querySelector("[data-phase4-source]").textContent.includes("erDiagram")'));
   const denied=await send('Page.addScriptToEvaluateOnNewDocument',{source:'Object.defineProperty(window,"localStorage",{get(){throw new Error("Simulated storage denial");}});'});
   await navigate(url+'#lesson/earth');
   check('Storage denial leaves lessons and exercise session usable',await evaluate('!App.storageAvailable && document.querySelector(".storage-warning")!==null && document.querySelectorAll("[data-coding-topic]").length===1'));
@@ -395,6 +454,9 @@ async function navigate(url) { const loaded=once('Page.loadEventFired');await se
   await route('#phase3/exercises/1');
   await evaluate('document.querySelector("[data-phase3-note]").value="Session-only CRS report";document.querySelector("[data-phase3-note]").dispatchEvent(new Event("input"));document.querySelector("[data-phase3-complete]").click()');
   check('Storage-denied Phase 3 exercises work without altering earlier phase progress',await evaluate('!App.storageAvailable && Phase3.completed()===1 && Phase2.completed()===1 && App.totals().coding===1 && Phase3.record("exercise-1").notes.includes("Session-only") && document.querySelector(".storage-warning")!==null'));
+  await route('#phase4/exercises/1');
+  await evaluate('document.querySelector("[data-phase4-note]").value="Session-only SQL report";document.querySelector("[data-phase4-note]").dispatchEvent(new Event("input"));document.querySelector("[data-phase4-complete]").click()');
+  check('Storage-denied Phase 4 exercises preserve in-session progress across phases',await evaluate('!App.storageAvailable && Phase4.completed()===1 && Phase3.completed()===1 && Phase2.completed()===1 && App.totals().coding===1 && Phase4.record("exercise-1").notes.includes("Session-only") && document.querySelector(".storage-warning")!==null'));
   await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:denied.identifier});
   check('No browser JavaScript exceptions',errors,[]);
   fs.writeFileSync(path.join(artifacts,'results.json'),JSON.stringify({checks:checks.length,errors},null,2));

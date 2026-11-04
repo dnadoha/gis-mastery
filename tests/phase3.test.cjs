@@ -107,7 +107,7 @@ test('Phase 3 integrates with static loading, routing, notebook, reset and build
   assert.ok(html.includes('href="#phase3"'));assert.ok(html.includes('href="gis-note-phase3.md"'));
   assert.ok(app.includes("if(page==='phase3') Phase3.render(main,parts.slice(1))"));
   assert.ok(app.includes('Phase3.notebookHTML()'));assert.ok(app.includes('Phase3.exportNotes()'));
-  assert.ok(app.includes("phase2:{},phase3:{},lastTopic:'geometry'"));
-  assert.ok(pkg.scripts.build.endsWith('node scripts/build-phase3.cjs'));
+  assert.ok(app.includes("phase2:{},phase3:{},phase4:{},lastTopic:'geometry'"));
+  assert.ok(pkg.scripts.build.includes('node scripts/build-phase3.cjs'));
   assert.equal(pkg.scripts['build:phase3'],'node scripts/build-phase3.cjs');
 });

@@ -3,9 +3,10 @@
   "private": true,
   "description": "Static GIS learning guide; dependencies are used only to build the complete technical reading.",
   "scripts": {
-    "build": "node scripts/build-reference.cjs && node scripts/build-beginner-guide.cjs && node scripts/build-programming.cjs && node scripts/build-phase2.cjs && node scripts/build-phase3.cjs",
+    "build": "node scripts/build-reference.cjs && node scripts/build-beginner-guide.cjs && node scripts/build-programming.cjs && node scripts/build-phase2.cjs && node scripts/build-phase3.cjs && node scripts/build-phase4.cjs",
     "build:phase2": "node scripts/build-phase2.cjs",
     "build:phase3": "node scripts/build-phase3.cjs",
+    "build:phase4": "node scripts/build-phase4.cjs",
     "test": "node --test tests/*.test.cjs",
     "test:browser": "node tests/browser-smoke.cjs",
     "test:programming": "node scripts/check-programming.cjs"

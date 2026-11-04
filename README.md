@@ -1,6 +1,6 @@
 # Fieldnotes — the geospatial field guide
 
-A static HTML/CSS/JavaScript learning website with three course phases. Phase 1 follows a connected beginner story with the complete technical reading from `core-geospatial-concepts.md`. Phase 2 follows the Amsterdam publishing project in `gis-note-phase2.md`. Phase 3 automates a synthetic flood study from `gis-note-phase3.md`. All generated pages, equations, diagrams and font assets are included for offline use.
+A static HTML/CSS/JavaScript learning website with four course phases. Phase 1 follows a connected beginner story with the complete technical reading from `core-geospatial-concepts.md`. Phase 2 follows the Amsterdam publishing project in `gis-note-phase2.md`. Phase 3 automates a synthetic flood study from `gis-note-phase3.md`. Phase 4 builds a synthetic emergency-response database from `phase-4-spatial-databases.md`. All generated pages, equations, diagrams and font assets are included for offline use.
 
 ## Open it
 
@@ -53,6 +53,24 @@ node --test tests/phase3.test.cjs
 ```
 
 Set `PUPPETEER_EXECUTABLE_PATH` to an installed Chromium browser if necessary (for example `C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe` on Windows). Commit generated `phase3-data.js`, `PHASE3-COVERAGE.md`, five `assets/figures/phase3-*.svg` files and the generated exercise/source downloads. No new npm dependencies or server-side deployment build are needed. Content/browser checks do not claim native GIS, live geocoding/routing or pgRouting execution.
+
+## Phase 4 — Spatial databases
+
+Open **index.html#phase4** after Phases 1–3. Nine connected chapters cover spatial types and SRIDs, boundary predicates, GiST and query plans, KNN/radius/clustering SQL, vector tiles, pgRouting, alternative engines, quality/topology and a valid-time station registry. Four progressive exercises use synthetic stations, incidents and districts in EPSG:28992, plus a toy graph with abstract costs.
+
+- `phase4-course.js`: guided chapters, explicit source mappings, checks, exercise evidence and separate clarifications.
+- `phase4-data.js`: generated full-source reader — **60 of 60 sections**, 25 tables, 37 code/text blocks and five offline Mermaid diagrams. Source formulas and ASCII schematics remain preformatted. [PHASE4-COVERAGE.md](PHASE4-COVERAGE.md) records exact mappings and the LF-canonical source hash.
+- `phase4.js`: path, chapters, full-text search, SQL workshop, saved evidence, read status and notebook integration.
+- `exercises/phase4/`: original tasks, full Markdown/SQL solutions, the assembled worked example, toy graph and MVT function. [Setup and file guide](exercises/phase4/README.md) explains extensions, execution order and deliberate SQL failures.
+
+Use a scratch PostgreSQL/PostGIS database and SQL client; Exercise 3 also needs pgRouting and Exercise 4 needs btree_gist. SQL runs locally in your tools, not the browser. Source downloads preserve the note; separate clarifications explain strict versus inclusive radius queries, invalid projected-to-geography casts, tile buffers, coverage-gap audits and temporal constraints/concurrent relocation limitations. Expected output is not execution evidence. Opening solutions never awards completion; editing exercise evidence clears completion. All four phases are included in notebook export and the explicitly confirmed reset, with existing records retained under the same storage key.
+
+```bash
+npm run build:phase4
+node --test tests/phase4.test.cjs
+```
+
+Use `PUPPETEER_EXECUTABLE_PATH` for an installed Chromium as described below. Commit `phase4-data.js`, `PHASE4-COVERAGE.md`, the five `assets/figures/phase4-*.svg` files, source note and generated SQL/Markdown downloads. Rebuilding needs the existing dependencies; deployment remains static without an installation or server-side build. Content/browser checks do not establish PostGIS, pgRouting or HTTP tile-service execution.
 
 ## Explore Phase 1
 
