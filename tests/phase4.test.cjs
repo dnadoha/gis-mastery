@@ -96,7 +96,7 @@ test('Phase 4 integrates loading, routing, persistence, notebook and static buil
   assert.ok(html.includes('href="#phase4"'));assert.ok(html.includes('href="phase-4-spatial-databases.md"'));
   assert.ok(app.includes("if(page==='phase4') Phase4.render(main,parts.slice(1))"));
   assert.ok(app.includes('Phase4.notebookHTML()'));assert.ok(app.includes('Phase4.exportNotes()'));
-  assert.ok(app.includes("phase2:{},phase3:{},phase4:{},lastTopic:'geometry'"));
-  assert.ok(pkg.scripts.build.endsWith('node scripts/build-phase4.cjs'));
+  assert.ok(app.includes("phase2:{},phase3:{},phase4:{},phase5:{},phase6:{},lastTopic:'geometry'"));
+  assert.ok(pkg.scripts.build.split(' && ').includes('node scripts/build-phase4.cjs'));
   assert.equal(pkg.scripts['build:phase4'],'node scripts/build-phase4.cjs');
 });

@@ -17,6 +17,15 @@ No existing application or test suite was present before implementation. The sup
 
 ## Verification history
 
+### Phase 5–6 app extension · 5 November 2026
+
+- **Built:** ten Phase 5 chapters and fourteen Phase 6 chapters, with an original labeled SVG and caption inside all 72 reading steps. The source readers retain all 65 + 81 sections, 54 tables, 92 code/text listings, eleven Mermaid diagrams and 21 displayed Phase 6 equations, plus inline MathML. All eight original exercises and full Markdown solutions are downloadable.
+- **Source integrity:** SHA-256 comparisons against the pre-edit copies confirm both supplied notes are byte-for-byte unchanged. The build reads them without writing them. LF-canonical source slices reconstruct every source character and have explicit unique chapter mappings.
+- **Passed:** 28/28 Phase 2–6 Node checks, including nine new source/visual/record checks. The complete Node suite passes 50/51; the sole failure is the previously documented Phase 1 Go geometry starter containing a learner implementation rather than the generated TODO. That file was preserved.
+- **Passed:** 856 real-browser checks using the existing headless Edge/CDP runner across all six phases. New checks cover every chapter’s three loaded visuals, all 146 source routes at 320 px, source search and empty results, step/source deep links, Next navigation, downloads, independent progress, evidence-edit invalidation, reload persistence, escaped notes, six-phase export/reset, direct-file images and storage-denied sessions. No JavaScript exceptions were observed.
+- **Visual inspection:** every new step SVG parses as XML and every text label fits its viewBox, measured in the browser. Inspected desktop overviews, the inventory coordinate plot, hydrology matrices and narrow-screen NDVI reading. Narrow figures scroll within their own focusable region and have a full-size link. Screenshots: `C:\Users\HDSL 72\AppData\Local\Temp\opencode\gis-browser-rt7oGs`. Overview captures wait for lazy image decoding; mobile captures wait for navigation transitions.
+- **Scope:** source outputs are teaching checkpoints. This run validates the static learning app and selected independent arithmetic, not live PostGIS/tile/edit servers, PDAL, external STAC acquisitions or model-training pipelines.
+
 ### Phase 4 integration · 4 November 2026
 
 - **Verified:** nine connected chapters and all **60 source sections**, 25 tables, 37 code/text blocks and five offline Mermaid diagrams. Formulas and ASCII schematics remain complete preformatted text. The imported note matches the shared-folder original exactly after LF canonicalisation. The Phase 4 build succeeded with the existing pinned dependencies, Node 24.11 and headless Chromium 153 on Termux; no application dependencies were added.

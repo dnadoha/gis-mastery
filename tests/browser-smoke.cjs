@@ -425,7 +425,94 @@ async function navigate(url) { const loaded=once('Page.loadEventFired');await se
   check('Notebook exports all four phases with safe SQL evidence fences',await evaluate('phase4Export.includes("Phase 4 — Spatial databases") && phase4Export.includes("Phase 3 — Programmatic GIS") && phase4Export.includes("Phase 2 — Data formats and standards") && phase4Export.includes("Test note") && phase4Export.includes("````text") && phase4Export.includes("SQL evidence")'));
   await evaluate('window.confirm=()=>false;document.querySelector("#reset-progress").click()');
   check('Cancelled reset preserves all four phases',await evaluate('Phase4.record("registry").read && Phase3.record("crs").read && Phase2.record("contracts").read && App.totals().coding===1'));
+  // The later phases share the established reader, with a distinct figure inside every step.
+  for(const n of [5,6]){
+    const phase=`Phase${n}`,key=`phase${n}`;
+    await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+    await route(`#${key}`);
+    check(`Phase ${n}: overview and sidebar cover all chapters`,await evaluate(`document.querySelectorAll('.course-card').length===${phase}.course.lessons.length && document.querySelectorAll('[data-study-phase="${key}"]').length===${phase}.course.lessons.length && document.documentElement.scrollWidth<=innerWidth`));
+    await evaluate('Promise.all([...document.querySelectorAll(".study-card-art img")].map(img=>{img.loading="eager";return img.decode();}))');
+    fs.writeFileSync(path.join(artifacts,`${key}-home-desktop.png`),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+    const lessons=await evaluate(`${phase}.course.lessons.map(l=>l.id)`);
+    for(const id of lessons){
+      await route(`#${key}/lesson/${id}`);
+      await evaluate('Promise.all([...document.querySelectorAll(".step-figure img")].map(img=>{img.loading="eager";return img.decode();}))');
+      check(`Phase ${n} ${id}: each reading step has a loaded figure and caption`,await evaluate('document.querySelectorAll(".reading-step").length===3 && [...document.querySelectorAll(".reading-step")].every(s=>s.querySelector(".step-figure img").naturalWidth>0 && s.querySelector("figcaption").textContent.length>80) && document.querySelectorAll("[data-study-topic][aria-current=page]").length===1'));
+      await send('Emulation.setDeviceMetricsOverride',{width:320,height:900,deviceScaleFactor:1,mobile:true});
+      check(`Phase ${n} ${id}: mobile reflow contains the wide diagrams`,await evaluate('document.documentElement.scrollWidth<=innerWidth && [...document.querySelectorAll(".figure-viewport")].every(f=>f.clientWidth<=innerWidth && f.scrollWidth>=f.clientWidth)'));
+    }
+    await route(`#${key}/lesson/${lessons[0]}/step-2`);
+    check(`Phase ${n}: step deep link focuses the visible step`,await evaluate(`document.activeElement.id==='${key}-step-2' && document.querySelector('#${key}-step-2').getBoundingClientRect().top<30`));
+    await evaluate('document.querySelector(".chapter-transition .primary").click();new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');
+    check(`Phase ${n}: Next follows chapter sequence`,await evaluate(`location.hash==='#${key}/lesson/${lessons[1]}'`));
+    await route(`#${key}/lesson/${lessons[0]}/notes`);
+    await evaluate(`document.querySelector('[data-study-note]').value='Phase ${n} note <script>literal</script>';document.querySelector('[data-study-note]').dispatchEvent(new Event('input'));document.querySelector('[data-study-read]').click()`);
+    await route(`#${key}/exercises/1`);
+    check(`Phase ${n}: source task and solution disclosure are separate`,await evaluate('document.querySelector("[data-study-source=exercise-1]").textContent.includes("Success criteria") && !document.querySelector(".coding-solution").open'));
+    await evaluate('document.querySelector(".coding-solution summary").click()');
+    check(`Phase ${n}: opening solution does not grant completion`,await evaluate(`${phase}.completed()===0`));
+    const evidence=`Phase ${n} evidence `+'``` <script>literal</script>';
+    await evaluate(`document.querySelector('[data-study-note]').value=${JSON.stringify(evidence)};document.querySelector('[data-study-note]').dispatchEvent(new Event('input'));document.querySelector('[data-study-complete]').click()`);
+    check(`Phase ${n}: completion updates progress`,await evaluate(`${phase}.completed()===1 && document.querySelector('#total-progress').textContent.includes('1 / 4') && document.querySelector('[data-study-progress]').textContent.startsWith('1 / 4')`));
+    const loaded=once('Page.loadEventFired');await send('Page.reload');await loaded;
+    check(`Phase ${n}: notes and completion survive reload with earlier work`,await evaluate(`${phase}.record('${lessons[0]}').read && ${phase}.record('${lessons[0]}').notes.includes('<script>') && document.querySelector('[data-study-complete]').checked && !document.querySelector('.study-exercise script') && Phase4.record('registry').read`));
+    await evaluate('document.querySelector("[data-study-note]").value+=" revised";document.querySelector("[data-study-note]").dispatchEvent(new Event("input"))');
+    check(`Phase ${n}: editing evidence clears completion`,await evaluate(`${phase}.completed()===0 && !document.querySelector('[data-study-complete]').checked`));
+    await route(`#${key}/exercises`);
+    check(`Phase ${n}: four complete tasks and solutions`,await evaluate('document.querySelectorAll(".study-exercise").length===4 && document.querySelectorAll(".coding-solution").length===4'));
+    const downloads=await evaluate('[...document.querySelectorAll("main a[download]")].map(a=>a.getAttribute("href"))');
+    for(const file of downloads)assert.equal((await fetch(url+file)).status,200,file);
+    await route(`#${key}/reference`);
+    check(`Phase ${n}: complete searchable source index`,await evaluate(`document.querySelectorAll('.source-index-entry').length===${phase}.data.sections.length`));
+    await evaluate(`document.querySelector('#study-search').value='${n===5?'ST_AsMVTGeom':'semivariogram'}';document.querySelector('#study-search').dispatchEvent(new Event('input'))`);
+    check(`Phase ${n}: full-text source search`,await evaluate(`document.querySelectorAll('.source-index-entry').length>0 && document.querySelectorAll('.source-index-entry').length<${phase}.data.sections.length`));
+    await evaluate('document.querySelector("#study-search").value="zz-no-such-section";document.querySelector("#study-search").dispatchEvent(new Event("input"))');
+    check(`Phase ${n}: empty search is recoverable`,await evaluate('document.querySelector("#study-source-index").textContent.includes("No matching")'));
+    const sections=await evaluate(`${phase}.data.sections.map(s=>s.id)`);
+    for(const id of sections){
+      await route(`#${key}/reference/${id}`);
+      await evaluate('Promise.all([...document.querySelectorAll(".source-text img")].map(img=>{img.loading="eager";return img.decode();}))');
+      check(`Phase ${n} source ${id}: renders and fits 320px`,await evaluate(`document.querySelector('[data-study-source]').dataset.studySource===${JSON.stringify(id)} && document.documentElement.scrollWidth<=innerWidth`));
+    }
+    await route(`#${key}/lesson/${n===5?'mvt':'surfaces'}/source-${n===5?'4-3':'A-2-2'}`);
+    check(`Phase ${n}: full source deep link opens ancestor disclosures`,await evaluate(`document.querySelector('#${key}-source').open && document.querySelector('#${key}-source-${n===5?'4-3':'A-2-2'}').open`));
+    if(n===6)check('Phase 6: inline and displayed equations contain offline MathML',await evaluate('document.querySelectorAll(".source-text math").length>10 && document.querySelector(".source-equation math")!==null'));
+    for(const hash of [`#${key}/lesson/missing`,`#${key}/reference/missing`,`#${key}/exercises/9`]){
+      await route(hash);check(`Unknown ${key} route has recovery: ${hash}`,await evaluate(`document.querySelector('main a').hash==='#${key}'`));
+    }
+  }
+  // Measure every generated step SVG's labels in the real browser, not just its XML.
+  const figureFiles=await evaluate('[Phase5,Phase6].flatMap(p=>p.course.lessons.flatMap(l=>l.steps.map((_,i)=>p.figurePath(l,i))))');
+  const figureProblems=await evaluate(`(async()=>{
+    const issues=[];
+    for(const file of ${JSON.stringify(figureFiles)}){
+      const xml=await (await fetch(file)).text(),doc=new DOMParser().parseFromString(xml,'image/svg+xml');
+      if(doc.querySelector('parsererror')){issues.push(file+': invalid XML');continue;}
+      const host=document.createElement('div');host.style.cssText='position:absolute;left:-10000px;top:0;width:720px';
+      host.append(document.importNode(doc.documentElement,true));document.body.append(host);
+      const svg=host.querySelector('svg'),view=svg.viewBox.baseVal;
+      for(const node of svg.querySelectorAll('text')){const b=node.getBBox();if(b.x<0||b.y<0||b.x+b.width>view.width+1||b.y+b.height>view.height+1)issues.push(file+': '+node.textContent);}
+      host.remove();
+    }
+    return issues;
+  })()`);
+  check('All 72 step SVGs parse and keep every text label inside the viewBox',figureProblems,[]);
+  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await route('#phase5/lesson/inventory/step-2');
+  await evaluate('document.querySelectorAll(".step-figure img")[1].decode()');
+  fs.writeFileSync(path.join(artifacts,'phase5-inventory-desktop.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+  await route('#phase6/lesson/terrain/step-3');
+  await evaluate('document.querySelectorAll(".step-figure img")[2].decode()');
+  fs.writeFileSync(path.join(artifacts,'phase6-terrain-desktop.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+  await send('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:true});
+  await route('#phase6/lesson/indices/step-2');
+  await evaluate('Promise.all(document.getAnimations().map(animation=>animation.finished.catch(()=>{})))');
+  fs.writeFileSync(path.join(artifacts,'phase6-indices-mobile.png'),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+  await route('#notebook');
+  await evaluate('App.download=(name,content)=>{window.allPhasesExport=content;};document.querySelector("#export-notes").click()');
+  check('Notebook includes isolated notes and evidence from all six phases',await evaluate('allPhasesExport.includes("Phase 5 note") && allPhasesExport.includes("Phase 6 note") && allPhasesExport.includes("SQL evidence") && allPhasesExport.includes("Test note") && !document.querySelector(".notebook-card script")'));
   await evaluate('window.confirm=()=>true;document.querySelector("#reset-progress").click()');
+  check('Confirmed reset clears both new phases',await evaluate('Object.keys(App.state.phase5).length===0 && Object.keys(App.state.phase6).length===0'));
   check('Confirmed reset also clears Phase 4 records',await evaluate('Object.keys(App.state.phase4).length===0'));
   check('Confirmed reset clears all three phases together',await evaluate('Phase3.completed()===0 && Phase2.completed()===0 && !Phase3.record("crs").notes && !Phase2.record("contracts").notes && App.totals().coding===0 && Object.keys(App.state.notes).length===0'));
   await navigate(pathToFileURL(path.join(root,'index.html')).href+'#lesson/resampling');
@@ -443,6 +530,11 @@ async function navigate(url) { const loaded=once('Page.loadEventFired');await se
   await route('#phase4/reference/3-4');
   await evaluate('document.querySelector(".source-diagram img").decode()');
   check('Phase 4 diagrams work directly from disk',await evaluate('document.querySelector(".source-diagram img").naturalWidth>0 && document.querySelector("[data-phase4-source]").textContent.includes("erDiagram")'));
+  for(const n of [5,6]){
+    await route(`#phase${n}/lesson/${n===5?'tile-math':'indices'}`);
+    await evaluate('Promise.all([...document.querySelectorAll(".step-figure img")].map(img=>{img.loading="eager";return img.decode();}))');
+    check(`Phase ${n}: step figures work directly from disk`,await evaluate('document.querySelectorAll(".step-figure img").length===3 && [...document.querySelectorAll(".step-figure img")].every(img=>img.naturalWidth>0)'));
+  }
   const denied=await send('Page.addScriptToEvaluateOnNewDocument',{source:'Object.defineProperty(window,"localStorage",{get(){throw new Error("Simulated storage denial");}});'});
   await navigate(url+'#lesson/earth');
   check('Storage denial leaves lessons and exercise session usable',await evaluate('!App.storageAvailable && document.querySelector(".storage-warning")!==null && document.querySelectorAll("[data-coding-topic]").length===1'));
@@ -457,6 +549,11 @@ async function navigate(url) { const loaded=once('Page.loadEventFired');await se
   await route('#phase4/exercises/1');
   await evaluate('document.querySelector("[data-phase4-note]").value="Session-only SQL report";document.querySelector("[data-phase4-note]").dispatchEvent(new Event("input"));document.querySelector("[data-phase4-complete]").click()');
   check('Storage-denied Phase 4 exercises preserve in-session progress across phases',await evaluate('!App.storageAvailable && Phase4.completed()===1 && Phase3.completed()===1 && Phase2.completed()===1 && App.totals().coding===1 && Phase4.record("exercise-1").notes.includes("Session-only") && document.querySelector(".storage-warning")!==null'));
+  for(const n of [5,6]){
+    await route(`#phase${n}/exercises/1`);
+    await evaluate('document.querySelector("[data-study-note]").value="Session-only evidence";document.querySelector("[data-study-note]").dispatchEvent(new Event("input"));document.querySelector("[data-study-complete]").click()');
+    check(`Phase ${n}: storage-denied session stays usable`,await evaluate(`!App.storageAvailable && Phase${n}.completed()===1 && Phase${n}.record('exercise-1').notes==='Session-only evidence' && Phase4.completed()===1`));
+  }
   await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:denied.identifier});
   check('No browser JavaScript exceptions',errors,[]);
   fs.writeFileSync(path.join(artifacts,'results.json'),JSON.stringify({checks:checks.length,errors},null,2));

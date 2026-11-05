@@ -1,6 +1,6 @@
 # Fieldnotes — the geospatial field guide
 
-A static HTML/CSS/JavaScript learning website with four course phases. Phase 1 follows a connected beginner story with the complete technical reading from `core-geospatial-concepts.md`. Phase 2 follows the Amsterdam publishing project in `gis-note-phase2.md`. Phase 3 automates a synthetic flood study from `gis-note-phase3.md`. Phase 4 builds a synthetic emergency-response database from `phase-4-spatial-databases.md`. All generated pages, equations, diagrams and font assets are included for offline use.
+A static HTML/CSS/JavaScript learning website with six course phases. Phase 1 follows a connected beginner story with the complete technical reading from `core-geospatial-concepts.md`. Phase 2 follows the Amsterdam publishing project in `gis-note-phase2.md`. Phase 3 automates a synthetic flood study from `gis-note-phase3.md`. Phase 4 builds a synthetic emergency-response database from `phase-4-spatial-databases.md`. Phase 5 develops an editable web map from `phase-5-note.md`; Phase 6 covers spatial analysis, remote sensing, 3D and geospatial ML from `phase-6-note.md`. All generated pages, equations, diagrams and font assets are included for offline use.
 
 ## Open it
 
@@ -71,6 +71,28 @@ node --test tests/phase4.test.cjs
 ```
 
 Use `PUPPETEER_EXECUTABLE_PATH` for an installed Chromium as described below. Commit `phase4-data.js`, `PHASE4-COVERAGE.md`, the five `assets/figures/phase4-*.svg` files, source note and generated SQL/Markdown downloads. Rebuilding needs the existing dependencies; deployment remains static without an installation or server-side build. Content/browser checks do not establish PostGIS, pgRouting or HTTP tile-service execution.
+
+## Phases 5–6 — Web maps and geospatial analysis
+
+Open **index.html#phase5** or **index.html#phase6**. Phase 5 has ten chapters following a street-tree inventory through tile mathematics, PostGIS MVT, services, styling, performance, security, deployment and editing. Phase 6 has fourteen chapters across spatial analysis, remote sensing, point clouds/3D and ML, ending in an independently assessed change study.
+
+Every one of the **72 reading steps** has a distinct local SVG and explanatory caption: coordinate plots, tile/raster grids, confusion matrices, numerical charts, profiles, symbol legends and workflow diagrams. Figures can be enlarged; narrow screens scroll the figure rather than the whole page. All source content is also available in the searchable reader: **65 Phase 5 sections** and **81 Phase 6 sections**, including complete code blocks, eleven original Mermaid diagrams and 21 rendered Phase 6 display equations. The original Markdown notes are read-only inputs to the builder.
+
+- `phase5-course.js` / `phase6-course.js`: guided chapters, explicit source mappings, step-specific visual data and separate reading clarifications.
+- `phase5-data.js` / `phase6-data.js`: generated offline source readers. [Phase 5 coverage](PHASE5-COVERAGE.md) and [Phase 6 coverage](PHASE6-COVERAGE.md) record the exact source hashes and routes.
+- `phase56.js`: shared rendering for these two phases, using the established course layout, source disclosures, exercise workflow and notebook conventions.
+- `scripts/build-phase56.cjs` and `scripts/phase56-figures.cjs`: compile source readings and render each step's original SVG; no extra dependencies.
+- `exercises/phase5/` and `exercises/phase6/`: four original tasks and complete Markdown solutions per phase, plus setup guidance. The app does not execute external GIS tools or servers.
+
+Each phase has independent saved chapter status, notes and exercise evidence. Editing evidence clears completion. Both phases participate in notebook export and the confirmed reset, using the existing browser storage key.
+
+```bash
+npm run build:phase56
+node --test tests/phase56.test.cjs
+node tests/browser-smoke.cjs
+```
+
+Use `PUPPETEER_EXECUTABLE_PATH` for the installed Chromium browser during builds, as above. Commit generated reader data, source coverage, exercise extracts and `assets/figures/phase5-*.svg` / `phase6-*.svg` assets. Static deployment and direct file opening need no build, network diagram renderer or live GIS service.
 
 ## Explore Phase 1
 
