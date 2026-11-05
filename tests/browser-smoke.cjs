@@ -425,6 +425,28 @@ async function navigate(url) { const loaded=once('Page.loadEventFired');await se
   check('Notebook exports all four phases with safe SQL evidence fences',await evaluate('phase4Export.includes("Phase 4 — Spatial databases") && phase4Export.includes("Phase 3 — Programmatic GIS") && phase4Export.includes("Phase 2 — Data formats and standards") && phase4Export.includes("Test note") && phase4Export.includes("````text") && phase4Export.includes("SQL evidence")'));
   await evaluate('window.confirm=()=>false;document.querySelector("#reset-progress").click()');
   check('Cancelled reset preserves all four phases',await evaluate('Phase4.record("registry").read && Phase3.record("crs").read && Phase2.record("contracts").read && App.totals().coding===1'));
+  // Every early-phase reading step now has a local figure, including preserved Phase 1 art.
+  const earlyRoutes=await evaluate('[...Beginner.path.map(id=>({phase:1,id,hash:"#lesson/"+id})),...[Phase2Course,Phase3Course,Phase4Course].flatMap((c,i)=>c.lessons.map(l=>({phase:i+2,id:l.id,hash:"#phase"+(i+2)+"/lesson/"+l.id})))]');
+  for(const lesson of earlyRoutes){
+    await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+    await route(lesson.hash);
+    await evaluate('Promise.all([...document.querySelectorAll(".reading-step img")].map(img=>{img.loading="eager";return img.decode();}))');
+    check(`Phase ${lesson.phase} ${lesson.id}: every step has an accessible local visual`,await evaluate('[...document.querySelectorAll(".reading-step")].length===3 && [...document.querySelectorAll(".reading-step")].every(s=>{const figures=[...s.querySelectorAll("figure")];return figures.length>0 && figures.every(f=>{const image=f.querySelector("img"),link=f.querySelector("a");return image.naturalWidth>0 && image.alt.length>30 && link.getAttribute("href")===image.getAttribute("src") && f.querySelector("figcaption").textContent.length>80;});})'));
+    await send('Emulation.setDeviceMetricsOverride',{width:320,height:900,deviceScaleFactor:1,mobile:true});
+    check(`Phase ${lesson.phase} ${lesson.id}: all step figures fit the mobile reading column`,await evaluate('document.documentElement.scrollWidth<=innerWidth && [...document.querySelectorAll(".figure-viewport")].every(f=>f.clientWidth<=innerWidth && f.tabIndex===0 && getComputedStyle(f).overflowX==="auto")'));
+  }
+  await route('#phase2/lesson/contracts');
+  await evaluate('document.querySelector(".figure-viewport").focus()');
+  check('Early-phase wide figures can be reached by keyboard',await evaluate('document.activeElement.classList.contains("figure-viewport")'));
+  await send('Input.dispatchKeyEvent',{type:'keyDown',key:'ArrowRight',code:'ArrowRight',windowsVirtualKeyCode:39});
+  await send('Input.dispatchKeyEvent',{type:'keyUp',key:'ArrowRight',code:'ArrowRight',windowsVirtualKeyCode:39});
+  const earlyShots=[['#lesson/distances',0,390,'phase1-distance-mobile.png'],['#phase2/lesson/contracts',2,1440,'phase2-grid-desktop.png'],['#phase3/lesson/workflow',0,1440,'phase3-flood-desktop.png'],['#phase4/lesson/relationships',0,1440,'phase4-boundary-desktop.png']];
+  for(const [hash,step,width,file] of earlyShots){
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<700});
+    await route(hash);
+    await evaluate(`Promise.all([...document.querySelectorAll('.reading-step img')].map(img=>{img.loading='eager';return img.decode();})).then(()=>{document.querySelectorAll('.reading-step')[${step}].scrollIntoView({block:'start'});return Promise.all(document.getAnimations().map(a=>a.finished.catch(()=>{})));})`);
+    fs.writeFileSync(path.join(artifacts,file),Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+  }
   // The later phases share the established reader, with a distinct figure inside every step.
   for(const n of [5,6]){
     const phase=`Phase${n}`,key=`phase${n}`;
@@ -482,7 +504,7 @@ async function navigate(url) { const loaded=once('Page.loadEventFired');await se
     }
   }
   // Measure every generated step SVG's labels in the real browser, not just its XML.
-  const figureFiles=await evaluate('[Phase5,Phase6].flatMap(p=>p.course.lessons.flatMap(l=>l.steps.map((_,i)=>p.figurePath(l,i))))');
+  const figureFiles=await evaluate('[...[1,2,3,4].flatMap(n=>Object.entries(EarlySteps["phase"+n]).flatMap(([id,steps])=>steps.flatMap((v,i)=>v?[EarlySteps.path(n,id,i)]:[]))),...[Phase5,Phase6].flatMap(p=>p.course.lessons.flatMap(l=>l.steps.map((_,i)=>p.figurePath(l,i))))]');
   const figureProblems=await evaluate(`(async()=>{
     const issues=[];
     for(const file of ${JSON.stringify(figureFiles)}){
@@ -496,7 +518,7 @@ async function navigate(url) { const loaded=once('Page.loadEventFired');await se
     }
     return issues;
   })()`);
-  check('All 72 step SVGs parse and keep every text label inside the viewBox',figureProblems,[]);
+  check('All 198 generated step SVGs parse and keep every text label inside the viewBox',figureProblems,[]);
   await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   await route('#phase5/lesson/inventory/step-2');
   await evaluate('document.querySelectorAll(".step-figure img")[1].decode()');
@@ -517,6 +539,11 @@ async function navigate(url) { const loaded=once('Page.loadEventFired');await se
   check('Confirmed reset clears all three phases together',await evaluate('Phase3.completed()===0 && Phase2.completed()===0 && !Phase3.record("crs").notes && !Phase2.record("contracts").notes && App.totals().coding===0 && Object.keys(App.state.notes).length===0'));
   await navigate(pathToFileURL(path.join(root,'index.html')).href+'#lesson/resampling');
   check('Direct file opening works without a server',await evaluate('document.querySelectorAll("[data-coding-topic]").length===1 && document.querySelector("[data-code]").value.includes("def block_sum") && document.querySelector(".lab-output").textContent.includes("22.50")'));
+  for(const hash of ['#lesson/coverage','#phase2/lesson/contracts','#phase3/lesson/workflow','#phase4/lesson/relationships']){
+    await route(hash);
+    await evaluate('Promise.all([...document.querySelectorAll(".reading-step img")].map(img=>{img.loading="eager";return img.decode();}))');
+    check(`Early-phase step visuals load directly from disk: ${hash}`,await evaluate('[...document.querySelectorAll(".reading-step")].every(s=>[...s.querySelectorAll("img")].some(img=>img.naturalWidth>0))'));
+  }
   await route('#reference/4-3');
   check('Complete source and equations also work when opened directly from disk',await evaluate('document.querySelector(".source-equation math")!==null && document.querySelector(".source-text").textContent.includes("TransformerGroup")'));
   await route('#phase2/reference/3-1');

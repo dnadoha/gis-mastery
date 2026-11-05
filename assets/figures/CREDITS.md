@@ -29,6 +29,17 @@ Chapters 3 and 8 reuse the original `study-heights.svg` and `study-accuracy.svg`
 
 Rebuild with `npm run build` after installing the pinned build dependencies. [`scripts/build-reference.cjs`](../../scripts/build-reference.cjs) uses Mermaid CLI and Chromium; `PUPPETEER_EXECUTABLE_PATH` can select an installed browser. Each output has a title/description and the website retains the original Mermaid definition alongside the rendered figure. [Rendering tool attribution and licences](../vendor/README.md).
 
+## Phase 1–4 step visuals
+
+The 126 `phase1-<chapter>-step-N.svg` through `phase4-<chapter>-step-N.svg` assets are original teaching illustrations defined in [`early-steps.js`](../../early-steps.js). Build with `npm run build:early-steps`. The builder reuses [`scripts/phase56-figures.cjs`](../../scripts/phase56-figures.cjs), preserves existing Phase 1 step illustrations, and checks coverage of all 147 early-phase reading steps.
+
+- Phase 1 uses the same invented school, road and population story. Plots labelled relative to School A shift the local origin without moving the features. The 60/80 m road legs, 100 m direct distance, 200 m selection rule and 200-person union are the existing teaching checkpoints. Terrain and uncertainty diagrams are explicitly illustrative; uncertainty intervals are a bounded-error example, not confidence intervals.
+- Phase 2 uses the documented Amsterdam parcel coordinates, DEM extent/cell counts, tile addresses and binary-layout examples. The MVT square is plotted with **negative tile y** to show the format’s screen-down axis; its actual coordinates remain `(10,10)` through `(30,30)`. Diagrammed HTTP, metadata and release workflows are contracts, not evidence of live service execution.
+- Phase 3’s flood overlay uses the actual synthetic rectangle coordinates on equal metre scales, offset from UTM `(500000,5700000)`. Population, raster and detour charts show the supplied checkpoints. The three-node Dijkstra table and unequal-block mean example are separate, clearly labelled arithmetic illustrations.
+- Phase 4’s district plot uses the actual synthetic EPSG:28992 fixture with offsets `(119000,486000)` on equal-scale axes. Incident I2 lies on the shared district boundary. Radius counts, network costs and valid-time results come from the course’s hand-checkable fixtures. Workflow and comparison diagrams are not query-plan benchmarks or database execution logs.
+
+Every new SVG includes a title and description; its in-app caption explains assumptions and units. Text labels accompany colours. All original source-note figures and existing chapter overview diagrams retain their original provenance.
+
 ## Phase 5–6 step visuals
 
 The 72 `phase5-<chapter>-step-N.svg` and `phase6-<chapter>-step-N.svg` images are original instructional diagrams generated from `phase5-course.js` and `phase6-course.js` by `scripts/phase56-figures.cjs`. Rebuild with `npm run build:phase56`. Every SVG has a title and description; every displayed step has a caption and full-size link. These figures use explicit teaching data, not generated photographs or application screenshots.

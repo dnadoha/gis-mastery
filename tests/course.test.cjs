@@ -6,7 +6,7 @@ const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
 const context = vm.createContext({ console });
-vm.runInContext(['course.js','geo.js','bangladesh.js','teaching.js','neighbourhood.js','beginner.js','programming.js','visuals.js'].map(file=>fs.readFileSync(path.join(root,file),'utf8')).join('\n') + '\nthis.topics = TOPICS; this.geo = Geo; this.bd = Bangladesh; this.teaching = Teaching; this.neighbourhood = Neighbourhood; this.programming = Programming;', context);
+vm.runInContext(['course.js','geo.js','bangladesh.js','teaching.js','neighbourhood.js','early-steps.js','beginner.js','programming.js','visuals.js'].map(file=>fs.readFileSync(path.join(root,file),'utf8')).join('\n') + '\nthis.topics = TOPICS; this.geo = Geo; this.bd = Bangladesh; this.teaching = Teaching; this.neighbourhood = Neighbourhood; this.programming = Programming;', context);
 const topics = context.topics, geo = context.geo;
 const plain = value => JSON.parse(JSON.stringify(value));
 const near = (actual, expected, tolerance) => assert.ok(Math.abs(actual-expected)<=tolerance, `${actual} differs from ${expected} by more than ${tolerance}`);
@@ -124,7 +124,8 @@ test('the flattening step contains both existing projection visuals with reading
   const html=beginner.lessonHTML(topic),steps=[...html.matchAll(/<section class="reading-step"[^>]*>([\s\S]*?)<\/section>/g)];
   assert.equal((steps[0][1].match(/<figure /g)||[]).length,2);
   assert.equal((steps[1][1].match(/<figure /g)||[]).length,1,'Keep the local-grid illustration in step 2');
-  assert.equal((steps[2][1].match(/<figure /g)||[]).length,0);
+  assert.equal((steps[2][1].match(/<figure /g)||[]).length,1,'Step 3 illustrates the measurement choice');
+  assert.ok(steps[2][1].includes('phase1-projections-step-3.svg'));
   const guide=fs.readFileSync(path.join(root,'beginner-geospatial-guide.md'),'utf8');
   const start=guide.indexOf('### 1. Understand why flattening needs a rule'),end=guide.indexOf('### 2. Choose for this neighbourhood',start);
   for(const [i,file] of ['qgis-projection_families.png','study-mercator.svg'].entries()) {

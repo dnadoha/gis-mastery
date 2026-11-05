@@ -17,6 +17,15 @@ No existing application or test suite was present before implementation. The sup
 
 ## Verification history
 
+### Phase 1–4 per-step visuals · 5 November 2026
+
+- **Coverage:** all 147 reading steps across the 49 early-phase chapters now contain illustrations. Added 126 local SVGs, retaining the existing Phase 1 step figures and all chapter/source diagrams. The six-phase app now illustrates all 219 reading steps.
+- **Build:** `npm run build:early-steps` succeeds and rejects missing step mappings or duplicate replacements of existing Phase 1 illustrations. The shared SVG renderer still reproduces all 72 Phase 5–6 step assets exactly.
+- **Browser:** 959 Edge/CDP checks pass. Every early-phase step has a loaded image, descriptive alt text, caption and full-size link. All 49 chapters fit 320 px; wide figures have keyboard-focusable internal scrolling. Representative pages also load directly from disk. All 198 generated step SVGs parse and every text label fits its viewBox. Navigation, source readers, progress, notes, export and storage-denied behaviour pass across all six phases, with no JavaScript exceptions.
+- **Visual inspection:** inspected the mobile school-road plot, DEM coordinate table, synthetic flood overlay and incident-on-district-boundary map. Screenshots are in `C:\Users\HDSL 72\AppData\Local\Temp\opencode\gis-browser-2hnJwf`.
+- **Node suite:** 50/51 pass. The existing Go geometry download mismatch remains: the tracked learner implementation differs from the generated TODO starter. The old projection test now expects the new step-3 illustration while still requiring both original step-1 images.
+- **Content:** the source notes and existing diagrams are preserved. New captions identify synthetic fixtures, schematic drawings, coordinate offsets, units and interpretation limits. This verification concerns the learning app, not execution of external GIS services or databases.
+
 ### Phase 5–6 app extension · 5 November 2026
 
 - **Built:** ten Phase 5 chapters and fourteen Phase 6 chapters, with an original labeled SVG and caption inside all 72 reading steps. The source readers retain all 65 + 81 sections, 54 tables, 92 code/text listings, eleven Mermaid diagrams and 21 displayed Phase 6 equations, plus inline MathML. All eight original exercises and full Markdown solutions are downloadable.

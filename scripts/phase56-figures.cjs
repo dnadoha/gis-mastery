@@ -91,12 +91,16 @@ function render(visual){
       }
       height=660;
     }else{
-      const colors=[green,orange,blue];
+      const colors=[green,orange,blue,'#8257a1'];
       visual.series.forEach((series,i)=>{
-        body+=`<polyline points="${series.points.map(([px,py])=>`${x(px)},${y(py)}`).join(' ')}" fill="none" stroke="${colors[i]}" stroke-width="3" ${i?'stroke-dasharray="8 4"':''}/>`;
+        body+=`<polyline points="${series.points.map(([px,py])=>`${x(px)},${y(py)}`).join(' ')}" fill="${escape(series.fill||'none')}" stroke="${colors[i]}" stroke-width="3" ${i?'stroke-dasharray="8 4"':''}/>`;
         const yy=670+i*34;
         body+=line(36,yy-6,70,yy-6,colors[i],i?'8 4':'')+text(82,yy,series.label,17);
       });
+      for(const [px,py,label] of visual.points||[]){
+        body+=`<circle cx="${x(px)}" cy="${y(py)}" r="7" fill="${orange}" stroke="white" stroke-width="2"/>`;
+        body+=text(x(px)+(px>(xmin+xmax)/2?-12:12),y(py)+(py>(ymin+ymax)/2?25:-12),label,18,ink,px>(xmin+xmax)/2?'end':'start');
+      }
       height=700+(visual.series.length-1)*34;
     }
   }else if(visual.kind==='symbols'){

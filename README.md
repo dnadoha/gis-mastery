@@ -72,6 +72,12 @@ node --test tests/phase4.test.cjs
 
 Use `PUPPETEER_EXECUTABLE_PATH` for an installed Chromium as described below. Commit `phase4-data.js`, `PHASE4-COVERAGE.md`, the five `assets/figures/phase4-*.svg` files, source note and generated SQL/Markdown downloads. Rebuilding needs the existing dependencies; deployment remains static without an installation or server-side build. Content/browser checks do not establish PostGIS, pgRouting or HTTP tile-service execution.
 
+## Visuals in every reading step
+
+All **219 reading steps across six phases** now have a relevant visual with a caption and full-size link. Phases 1–4 retain their existing illustrations and add **126 offline SVGs** covering the other steps: local-coordinate plots, population and raster grids, tile/byte layouts, flood overlays, database boundary cases, result charts and workflows.
+
+`early-steps.js` defines these chapter-specific figures; `scripts/build-early-steps.cjs` reuses the Phase 5–6 renderer and checks that all **147 early-phase steps** are covered. Run `npm run build:early-steps` to regenerate just these assets. No browser-side drawing library or network service is required. Wide figures scroll within a keyboard-focusable region on narrow screens.
+
 ## Phases 5–6 — Web maps and geospatial analysis
 
 Open **index.html#phase5** or **index.html#phase6**. Phase 5 has ten chapters following a street-tree inventory through tile mathematics, PostGIS MVT, services, styling, performance, security, deployment and editing. Phase 6 has fourteen chapters across spatial analysis, remote sensing, point clouds/3D and ML, ending in an independently assessed change study.
